@@ -2,6 +2,7 @@ use crate::{Error, SerialReadTimeout, SerialWrite};
 
 use super::{AtCommand, AtDecode, AtEncode, AtRead, AtWrite, Decoder, Encoder};
 
+/// Set the GPS power state.
 pub struct Cgnspwr;
 
 impl AtCommand for Cgnspwr {

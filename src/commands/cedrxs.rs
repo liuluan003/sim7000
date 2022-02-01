@@ -2,6 +2,7 @@ use crate::Error;
 
 use super::{AtCommand, AtEncode, AtWrite};
 
+/// Configure eDRX mode.
 pub struct Cedrxs;
 
 impl AtCommand for Cedrxs {

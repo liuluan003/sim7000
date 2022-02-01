@@ -1,5 +1,6 @@
 use super::{AtCommand, AtExecute};
 
+/// Cold start GPS.
 pub struct Cgnscold;
 
 impl AtCommand for Cgnscold {

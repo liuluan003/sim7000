@@ -2,6 +2,7 @@ use crate::{Error, SerialReadTimeout};
 
 use super::{AtCommand, AtDecode, AtExecute};
 
+/// Retrieve the ICCID (i.e. The SIM identifier)
 pub struct Ccid;
 
 impl AtCommand for Ccid {

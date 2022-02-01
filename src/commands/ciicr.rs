@@ -1,6 +1,7 @@
 use super::{AtCommand, AtDecode, AtExecute, Decoder};
 use crate::{Error, SerialReadTimeout};
 
+/// Bring up cellular connection.
 pub struct Ciicr;
 
 impl AtCommand for Ciicr {

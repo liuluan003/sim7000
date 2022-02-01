@@ -2,6 +2,7 @@ use crate::Error;
 
 use super::{AtCommand, AtDecode, AtExecute};
 
+/// Copy the GPS XTRA file.
 pub struct Cgnscpy;
 
 impl AtCommand for Cgnscpy {

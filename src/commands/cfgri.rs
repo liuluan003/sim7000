@@ -2,6 +2,7 @@ use crate::{Error, SerialWrite};
 
 use super::{AtCommand, AtEncode, AtWrite, Encoder};
 
+/// Set when the ring indicator pin will be activated.
 pub struct Cfgri;
 
 impl AtCommand for Cfgri {

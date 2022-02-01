@@ -2,6 +2,7 @@ use crate::{Error, SerialReadTimeout, SerialWrite};
 
 use super::{AtCommand, AtDecode, AtEncode, AtRead, AtWrite, Decoder, Encoder};
 
+/// Retrieve the cellular registration status.
 pub struct Cgreg;
 
 impl AtCommand for Cgreg {

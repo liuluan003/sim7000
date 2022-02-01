@@ -2,6 +2,7 @@ use crate::Error;
 
 use super::{AtCommand, AtEncode, AtWrite};
 
+/// Set whether or not the GPS module will attempt to use XTRA data to assist in location tracking.
 pub struct Cgnsxtra;
 
 impl AtCommand for Cgnsxtra {

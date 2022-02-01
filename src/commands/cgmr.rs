@@ -2,6 +2,7 @@ use crate::{Error, SerialReadTimeout};
 
 use super::{AtCommand, AtDecode, AtExecute, Decoder};
 
+/// Retrieve the modem firmware revision.
 pub struct Cgmr;
 
 impl AtCommand for Cgmr {

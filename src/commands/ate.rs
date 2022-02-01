@@ -1,5 +1,6 @@
 use super::{AtCommand, AtExecute};
 
+/// Turn echo off
 pub struct Ate0;
 
 impl AtCommand for Ate0 {

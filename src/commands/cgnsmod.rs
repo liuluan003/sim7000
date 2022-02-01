@@ -2,6 +2,7 @@ use crate::Error;
 
 use super::{AtCommand, AtDecode, AtEncode, AtRead};
 
+/// Configure the GPS satellite parameters.
 pub struct Cgnsmod;
 
 impl AtCommand for Cgnsmod {

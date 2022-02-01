@@ -2,6 +2,7 @@ use crate::{Error, SerialReadTimeout};
 
 use super::{AtCommand, AtDecode, AtExecute, Decoder};
 
+/// Retrieve the current GPS status.
 pub struct Cgnsinf;
 
 impl AtCommand for Cgnsinf {
