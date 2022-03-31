@@ -1,6 +1,6 @@
 use crate::{Error, SerialReadTimeout, SerialWrite};
 
-use super::{AtCommand, AtDecode, AtEncode, AtRead, AtWrite, Decoder, Encoder};
+use super::{AtCommand, AtDecode, AtEncode, AtRead, AtWrite, Decoder, Encoder, RegistrationStatus};
 
 pub struct Cgreg;
 
@@ -8,19 +8,9 @@ impl AtCommand for Cgreg {
     const COMMAND: &'static str = "AT+CGREG";
 }
 
-#[derive(Copy, Clone, Eq, PartialEq, Debug)]
-pub enum RegistrationStatus {
-    NotRegistered,
-    RegisteredHome,
-    Searching,
-    RegistrationDenied,
-    Unknown,
-    RegisteredRoaming,
-}
-
 #[repr(u8)]
 #[derive(Copy, Clone, Eq, PartialEq, Debug)]
-pub enum RegistrationMode {
+pub enum GRegistrationMode {
     Disable = 0,
     EnableReg = 1,
     EnableRegLac = 2,
@@ -29,7 +19,7 @@ pub enum RegistrationMode {
 
 #[derive(Copy, Clone)]
 pub struct RegistrationResponse {
-    pub mode: RegistrationMode,
+    pub mode: GRegistrationMode,
     pub stat: RegistrationStatus,
 }
 
@@ -41,10 +31,10 @@ impl AtDecode for RegistrationResponse {
         decoder.expect_str("+CGREG: ", timeout_ms)?;
 
         let mode = match decoder.decode_scalar(timeout_ms)? {
-            0 => RegistrationMode::Disable,
-            1 => RegistrationMode::EnableReg,
-            2 => RegistrationMode::EnableRegLac,
-            4 => RegistrationMode::EnableRegLacTime,
+            0 => GRegistrationMode::Disable,
+            1 => GRegistrationMode::EnableReg,
+            2 => GRegistrationMode::EnableRegLac,
+            4 => GRegistrationMode::EnableRegLacTime,
             _ => return Err(crate::Error::DecodingFailed),
         };
 
@@ -66,7 +56,7 @@ impl AtDecode for RegistrationResponse {
     }
 }
 
-impl AtEncode for RegistrationMode {
+impl AtEncode for GRegistrationMode {
     fn encode<B: SerialWrite>(
         &self,
         encoder: &mut Encoder<B>,
@@ -80,6 +70,6 @@ impl AtRead for Cgreg {
 }
 
 impl AtWrite<'_> for Cgreg {
-    type Input = RegistrationMode;
+    type Input = GRegistrationMode;
     type Output = ();
 }

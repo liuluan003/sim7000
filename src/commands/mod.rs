@@ -28,7 +28,6 @@ mod cntp;
 mod cntpcid;
 mod cops;
 mod cpsi;
-mod creg;
 mod csclk;
 mod csq;
 mod cstt;
@@ -62,7 +61,6 @@ pub use cntp::*;
 pub use cntpcid::*;
 pub use cops::*;
 pub use cpsi::*;
-pub use creg::*;
 pub use csclk::*;
 pub use csq::*;
 pub use cstt::*;
@@ -165,6 +163,17 @@ impl AtEncode for i32 {
     ) -> Result<(), Error<B::SerialError>> {
         encoder.encode_scalar(*self)
     }
+}
+
+#[repr(u8)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug)]
+pub enum RegistrationStatus {
+    NotRegistered,
+    RegisteredHome,
+    Searching,
+    RegistrationDenied,
+    Unknown,
+    RegisteredRoaming,
 }
 
 pub trait AtDecode: Sized {
