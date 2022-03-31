@@ -47,6 +47,8 @@ pub use cgnsinf::*;
 pub use cgnspwr::*;
 pub use cgnsxtra::*;
 pub use cgreg::*;
+pub use cereg::*;
+pub use creg::*;
 pub use ciicr::*;
 pub use ciprxget::*;
 pub use cipsend::*;
