@@ -15,8 +15,9 @@ use embassy_nrf::{
 use embassy_time::{with_timeout, Duration, Timer};
 //use sim7000_async::{spawn_modem, BuildIo, ModemPower, PowerState, SplitIo};
 
-use defmt_rtt as _; // linker shenanigans
-
+use defmt_rtt as _;
+use embedded_io::asynch::Write; // linker shenanigans
+use embedded_io::asynch::Read; 
 extern crate panic_rtt_target;
 
 /*
@@ -77,7 +78,7 @@ async fn main(spawner: Spawner) {
     config.parity = uarte::Parity::EXCLUDED;
     config.baudrate = uarte::Baudrate::BAUD115200;
 
-     let uarte= BufferedUarte::new(
+     let mut uarte= BufferedUarte::new(
         &mut state,
         p.UARTE0,
         p.TIMER0,
@@ -94,13 +95,32 @@ async fn main(spawner: Spawner) {
 
     );
 
+    let mut testString  = "AT\r\n";
+    
+    let mut readbuf = [0u8;1024];
+    uarte.write(testString.as_bytes()).await;  
+    let read= uarte.read(&mut readbuf[..]).await.unwrap();
+    
+    if read>0 {
+        let strreadbuf:&str = core::str::from_utf8(&readbuf[0..read]).unwrap();
+        defmt::info!("Read{}",&strreadbuf);
+    }
+
+
+
+
+    
+    
+
+
+    /*
     loop{
         P1_14.set_high();
         Timer::after(Duration::from_secs(1)).await;
         P1_14.set_low();
         Timer::after(Duration::from_secs(1)).await;
     }
-
+    */
 
 
 
