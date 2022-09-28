@@ -2,6 +2,117 @@
 #![no_main]
 #![feature(type_alias_impl_trait)]
 
+
+use core::future::Future;
+use embassy_executor::Spawner;
+use embassy_nrf::{
+    buffered_uarte::{BufferedUarte, BufferedUarteRx, BufferedUarteTx, State},
+    gpio::{AnyPin, Input, Level, Output, OutputDrive, Pin, Pull},
+    interrupt::{self, UARTE0_UART0},
+    peripherals::{PPI_CH1, PPI_CH2, TIMER0, UARTE0},
+    uarte,
+};
+use embassy_time::{with_timeout, Duration, Timer};
+//use sim7000_async::{spawn_modem, BuildIo, ModemPower, PowerState, SplitIo};
+
+use defmt_rtt as _; // linker shenanigans
+
+extern crate panic_rtt_target;
+
+/*
+let power_pins = ModemPowerPins {
+    status: Input::new(p.P1_07.degrade(), Pull::None),
+    power_key: Output::new(p.P1_03.degrade(), Level::Low, OutputDrive::Standard),
+    dtr: Output::new(p.P1_05.degrade(), Level::Low, OutputDrive::Standard),
+    reset: Output::new(p.P1_04.degrade(), Level::Low, OutputDrive::Standard),
+    ri: Input::new(p.P1_15.degrade(), Pull::Up),
+};
+
+
+
+source
+pub fn new(
+    pin: impl Peripheral<P = T> + 'd,
+    initial_output: Level,
+    drive: OutputDrive
+) -> Self
+*/
+
+
+
+
+
+struct UarteComponents {
+    pub uarte: UARTE0,
+    pub timer: TIMER0,
+    pub ppi_ch1: PPI_CH1,
+    pub ppi_ch2: PPI_CH2,
+    pub irq: UARTE0_UART0,
+    pub rxd: AnyPin,
+    pub txd: AnyPin,
+    pub rts: AnyPin,
+    pub cts: AnyPin,
+    pub config: uarte::Config,
+    pub state: State<'static, UARTE0, TIMER0>,
+    pub tx_buffer: [u8; 256],
+    pub rx_buffer: [u8; 256],
+}
+
+
+
+
+
+
+#[embassy_executor::main]
+async fn main(spawner: Spawner) {
+    let p = embassy_nrf::init(Default::default());
+    let mut P1_14=Output::new(p.P1_14.degrade(), Level::Low, OutputDrive::Standard);
+    
+    let mut state = State::new();
+    let mut tx_buf =[0u8;64];
+    let mut rx_buf =[0u8;64];
+
+    let irq = interrupt::take!(UARTE0_UART0);
+    let mut config = uarte::Config::default();
+    config.parity = uarte::Parity::EXCLUDED;
+    config.baudrate = uarte::Baudrate::BAUD115200;
+
+     let uarte= BufferedUarte::new(
+        &mut state,
+        p.UARTE0,
+        p.TIMER0,
+        p.PPI_CH0,
+        p.PPI_CH1,
+        irq,
+        p.P0_20,
+        p.P0_24,
+        p.P0_08,
+        p.P0_11,
+        config,
+        &mut rx_buf[..],
+        &mut tx_buf[..],
+
+    );
+
+    loop{
+        P1_14.set_high();
+        Timer::after(Duration::from_secs(1)).await;
+        P1_14.set_low();
+        Timer::after(Duration::from_secs(1)).await;
+    }
+
+
+
+
+}
+
+
+
+/*
+#![no_std]
+#![no_main]
+#![feature(type_alias_impl_trait)]
+
 mod example;
 
 use core::future::Future;
@@ -359,3 +470,4 @@ impl ModemPower for ModemPowerPins {
         }
     }
 }
+*/
