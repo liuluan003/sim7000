@@ -108,7 +108,7 @@ impl<'context> Pump for RxPump<'context> {
             } else if let Ok(response) = ResponseCode::from_line(&line) {
                 // If it's not a URC, try to parse it as a regular response code
 
-                log::info!("Got generic responseM: {:?}", line.as_str());
+                log::info!("Got generic response: {:?}", line.as_str());
                 if with_timeout(
                     Duration::from_secs(10),
                     self.generic_response.send(response),

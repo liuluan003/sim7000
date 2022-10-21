@@ -15,6 +15,8 @@ impl ATParseLine for Iccid {
     fn from_line(line: &str) -> Result<Self, ATParseErr> {
         //  "89 88 28 0666001104843 8"
         //  "89 01 26 0862291477114 f"
+        //+CCID: 89883030000002746920
+        let line = line.strip_prefix("+CCID: ").ok_or("Invalid prefix")?;
         if line.len() != 20 {
             return Err("Invalid length".into());
         }

@@ -75,6 +75,10 @@ async fn main(spawner: Spawner) {
         embassy_nrf::gpio::OutputDrive::Standard,
     );
     
+    
+    SIM7600_PEN.set_low();
+    Timer::after(Duration::from_millis(1500)).await;
+    SIM7600_PEN.set_high();
 
 
     let mut modem = spawn_modem!(
@@ -82,12 +86,17 @@ async fn main(spawner: Spawner) {
         UarteComponents as UarteComponents { uarte: p.UARTE0, timer: p.TIMER0, ppi_ch1: p.PPI_CH1, ppi_ch2: p.PPI_CH2, irq, rxd: p.P0_06.degrade(), txd: p.P0_08.degrade(), rts: p.P0_07.degrade(), cts: p.P1_10.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
         power_pins
     );
-
+    defmt::info!("T0");
     defmt::info!("Initializing modem");
     modem.init().await.unwrap();
 
+
+    defmt::info!("T1");
+
     defmt::info!("Activating modem");
     modem.activate().await.unwrap();
+
+    defmt::info!("T2");
 
     defmt::info!("sleeping 1s");
     Timer::after(Duration::from_millis(1000)).await;

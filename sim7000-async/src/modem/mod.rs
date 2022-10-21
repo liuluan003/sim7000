@@ -86,16 +86,20 @@ impl<'c, P: ModemPower> Modem<'c, P> {
 
     pub async fn init(&mut self) -> Result<(), Error> {
         self.deactivate().await;
+        defmt::info!("S0");
         let publisher = self.context.power_signal.publisher().unwrap();
         publisher.publish(true).await;
+        defmt::info!("S1");
         self.power.enable().await;
+        defmt::info!("S2");
 
         let commands = self.commands.lock().await;
-
+        defmt::info!("S3");
         let set_flow_control = SetFlowControl {
             dce_by_dte: FlowControl::Hardware,
             dte_by_dce: FlowControl::Hardware,
         };
+        defmt::info!("S4");
 
         // Turn on hardware flow control, the modem does not save this state on reboot.
         // We need to set it as fast as possible to avoid dropping bytes.
@@ -108,7 +112,7 @@ impl<'c, P: ModemPower> Modem<'c, P> {
                 break;
             }
         }
-
+        defmt::info!("S5");
         // Modem has been known to get stuck in an unresponsive state until we jiggle it by
         // enabling echo. This is fine.
         for _ in 0..5 {
@@ -121,24 +125,39 @@ impl<'c, P: ModemPower> Modem<'c, P> {
                 break;
             }
         }
-
+        defmt::info!("S6");
         commands.run(csclk::SetSlowClock(false)).await?;
+        defmt::info!("S7");
         commands.run(At).await?;
+        defmt::info!("S8");
+        commands.run(GetSignalQuality).await?;
+        defmt::info!("S9");
+        
+        let (iccidvalue,ok)= commands.run(ShowIccid).await?;
+        defmt::info!("country code{} {} {}", iccidvalue.country,iccidvalue.issuer,iccidvalue.account);
+        defmt::info!("S10");
         commands.run(ipr::SetBaudRate(BaudRate::Hz115200)).await?;
+        defmt::info!("S11");
         commands.run(set_flow_control).await?;
         commands
             .run(cmee::ConfigureCMEErrors(CMEErrorMode::Numeric))
             .await?;
+        defmt::info!("S12");
         commands.run(cnmp::SetNetworkMode(NetworkMode::Lte)).await?;
-        commands.run(cmnb::SetNbMode(NbMode::CatM)).await?;
+        defmt::info!("S13");
+        //commands.run(cmnb::SetNbMode(NbMode::CatM)).await?;
+        defmt::info!("S14");
         commands.run(cfgri::ConfigureRiPin(RiPinMode::On)).await?;
-        commands.run(cbatchk::EnableVBatCheck(true)).await?;
+        defmt::info!("S15");
+        //commands.run(cbatchk::EnableVBatCheck(true)).await?;
+        defmt::info!("S16");
 
         let configure_edrx = cedrxs::ConfigureEDRX {
             n: EDRXSetting::Enable,
             act_type: AcTType::CatM,
             requested_edrx_value: 0b0000,
         };
+        defmt::info!("S14");
 
         for _ in 0..5 {
             match commands.run(configure_edrx).await {
@@ -146,10 +165,13 @@ impl<'c, P: ModemPower> Modem<'c, P> {
                 _ => Timer::after(Duration::from_millis(200)).await,
             }
         }
+        defmt::info!("S15");
         commands.run(configure_edrx).await?;
-
+        defmt::info!("S16");
         core::mem::drop(commands);
+        defmt::info!("S17");
         core::mem::drop(publisher);
+        defmt::info!("S18");
         self.deactivate().await;
         Ok(())
     }
