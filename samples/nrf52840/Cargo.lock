@@ -517,6 +517,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
+name = "jlink_rtt"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "42f6af40154f64bd7095b5245d6933fef99b0a28c432b38a676cfafaa0aedfc2"
+
+[[package]]
 name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -577,7 +583,8 @@ dependencies = [
  "embedded-io",
  "futures",
  "heapless",
- "panic-rtt-target",
+ "jlink_rtt",
+ "panic-probe",
  "rtt-target",
  "sim7000-async",
 ]
@@ -603,13 +610,13 @@ dependencies = [
 ]
 
 [[package]]
-name = "panic-rtt-target"
-version = "0.1.2"
+name = "panic-probe"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0d6ab67bc881453e4c90f958c657c1303670ea87bc1a16e87fd71a40f656dce9"
+checksum = "3ab1f00eac22bd18f8e5cae9555f2820b3a0c166b5b556ee3e203746ea6dcf3a"
 dependencies = [
  "cortex-m",
- "rtt-target",
+ "defmt",
 ]
 
 [[package]]
