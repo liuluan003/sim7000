@@ -105,13 +105,14 @@ async fn main(spawner: Spawner) {
         Some(warner) => spawner.must_spawn(example::voltage_warn(warner)),
         None => defmt::error!("Failed to take VoltageWarner handle"),
     }
-
+    /* no internal GNSS
     match modem.claim_gnss().await {
+     
         Ok(Some(gnss)) => spawner.must_spawn(example::gnss(gnss)),
         Ok(None) => defmt::error!("Failed to take GNSS handle"),
         Err(e) => defmt::error!("Failed to subscribe to GNSS: {:?}", e),
     }
-
+  */
     defmt::info!("sleeping 5s");
     Timer::after(Duration::from_millis(5000)).await;
 

@@ -143,20 +143,21 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             .run(cmee::ConfigureCMEErrors(CMEErrorMode::Numeric))
             .await?;
         defmt::info!("S12");
-        commands.run(cnmp::SetNetworkMode(NetworkMode::Lte)).await?;
+        //commands.run(cnmp::SetNetworkMode(NetworkMode::Lte)).await?;
         defmt::info!("S13");
         //commands.run(cmnb::SetNbMode(NbMode::CatM)).await?;
         defmt::info!("S14");
-        commands.run(cfgri::ConfigureRiPin(RiPinMode::On)).await?;
+        //commands.run(cfgri::ConfigureRiPin(RiPinMode::On)).await?;
         defmt::info!("S15");
         //commands.run(cbatchk::EnableVBatCheck(true)).await?;
         defmt::info!("S16");
-
+        /* 
         let configure_edrx = cedrxs::ConfigureEDRX {
             n: EDRXSetting::Enable,
             act_type: AcTType::CatM,
             requested_edrx_value: 0b0000,
         };
+         
         defmt::info!("S14");
 
         for _ in 0..5 {
@@ -165,14 +166,16 @@ impl<'c, P: ModemPower> Modem<'c, P> {
                 _ => Timer::after(Duration::from_millis(200)).await,
             }
         }
-        defmt::info!("S15");
-        commands.run(configure_edrx).await?;
-        defmt::info!("S16");
-        core::mem::drop(commands);
         defmt::info!("S17");
-        core::mem::drop(publisher);
+        commands.run(configure_edrx).await?;
         defmt::info!("S18");
+        core::mem::drop(commands);
+        defmt::info!("S19");
+        core::mem::drop(publisher);
+        defmt::info!("S20");
+       
         self.deactivate().await;
+        */
         Ok(())
     }
 
