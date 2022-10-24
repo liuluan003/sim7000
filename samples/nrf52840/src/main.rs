@@ -115,12 +115,12 @@ async fn main(spawner: Spawner) {
         Err(e) => defmt::error!("Failed to subscribe to GNSS: {:?}", e),
     }
   */
-    defmt::info!("sleeping 5s");
-    Timer::after(Duration::from_millis(5000)).await;
-
-    defmt::info!("Signal quality: {:?}", modem.query_signal().await);
-    defmt::info!("System info: {:?}", modem.query_system_info().await);
-
+    //defmt::info!("sleeping 5s");
+    //Timer::after(Duration::from_millis(5000)).await;
+    defmt::info!("T3");
+    //defmt::info!("Signal quality: {:?}", modem.query_signal().await);
+    //defmt::info!("System info: {:?}", modem.query_system_info().await);
+    defmt::info!("T4");
     for _ in 0..100 {
         defmt::info!("sleeping 1s");
         Timer::after(Duration::from_millis(1000)).await;
@@ -150,7 +150,7 @@ async fn main(spawner: Spawner) {
             }
         }
     }
-
+    defmt::info!("T6");
     defmt::info!("main() finished");
     loop {
         Timer::after(Duration::from_millis(1000)).await;

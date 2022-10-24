@@ -207,13 +207,12 @@ impl<'c, P: ModemPower> Modem<'c, P> {
                 break;
             }
         } 
-        defmt::info!("A3");
+       /* defmt::info!("A3");
         commands.run(ate::SetEcho(false)).await?;
         commands
             .run(cgreg::ConfigureRegistrationUrc::EnableRegLocation)
             .await?;
-
-
+        */ 
             defmt::info!("S12");
             commands.run(Cgdcount).await?;
             defmt::info!("S13");
