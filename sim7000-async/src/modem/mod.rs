@@ -225,13 +225,13 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             defmt::info!("S13");
             commands.run(Cgdcount).await?;
             
-            Timer::after(Duration::from_millis(500)).await;
+            Timer::after(Duration::from_millis(1000)).await;
             defmt::info!("S14");
             commands.run(Cipmode0).await?;
-            Timer::after(Duration::from_millis(500)).await;
+            Timer::after(Duration::from_millis(1000)).await;
             defmt::info!("S15");
             commands.run(Netopen).await?;
-            Timer::after(Duration::from_millis(500)).await;
+            Timer::after(Duration::from_millis(1000)).await;
             defmt::info!("S16");
             commands.run(Cifsr).await?;
             Timer::after(Duration::from_millis(100)).await;
