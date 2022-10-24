@@ -142,20 +142,20 @@ impl<'c, P: ModemPower> Modem<'c, P> {
         commands
             .run(cmee::ConfigureCMEErrors(CMEErrorMode::Numeric))
             .await?;
+
+        /* 
         defmt::info!("S12");
         commands.run(Cgdcount).await?;
         defmt::info!("S13");
         commands.run(Cipmode1).await?;
         defmt::info!("S14");
         commands.run(Csocksetpn1).await?;
-        //commands.run(cmnb::SetNbMode(NbMode::CatM)).await?;
         defmt::info!("S15");
         commands.run(Netopen).await?;
-        //commands.run(cfgri::ConfigureRiPin(RiPinMode::On)).await?;
+        Timer::after(Duration::from_millis(1000)).await;
         defmt::info!("S16");
-        commands.run(Cgdcount).await?;
-        //commands.run(cbatchk::EnableVBatCheck(true)).await?;
-        
+        commands.run(Cifsr).await?;
+        */
         /* 
         let configure_edrx = cedrxs::ConfigureEDRX {
             n: EDRXSetting::Enable,
@@ -213,6 +213,23 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             .run(cgreg::ConfigureRegistrationUrc::EnableRegLocation)
             .await?;
 
+
+            defmt::info!("S12");
+            commands.run(Cgdcount).await?;
+            defmt::info!("S13");
+            commands.run(Cipmode0).await?;
+            Timer::after(Duration::from_millis(1000)).await;
+            defmt::info!("S14");
+            commands.run(Csocksetpn1).await?;
+            Timer::after(Duration::from_millis(1000)).await;
+            defmt::info!("S15");
+            commands.run(Netopen).await?;
+            Timer::after(Duration::from_millis(1000)).await;
+            defmt::info!("S16");
+            commands.run(Cifsr).await?;
+            Timer::after(Duration::from_millis(1000)).await;
+            
+        /*
         self.wait_for_registration(&commands).await?;
         defmt::info!("A4");
 
@@ -221,7 +238,9 @@ impl<'c, P: ModemPower> Modem<'c, P> {
         commands.run(cipshut::ShutConnections).await?;
         defmt::info!("A6");
 
-        self.authenticate(&commands).await?;
+
+        */
+       // self.authenticate(&commands).await?;
         Ok(())
     }
 
