@@ -30,8 +30,9 @@ pub mod cstt;
 pub mod ifc;
 pub mod ipr;
 pub mod csocksetpn1;
-pub mod Cipmode1;
-pub mod Netopen;
+pub mod cipmode1;
+pub mod netopen;
+pub mod cgdcount;
 
 pub use at::At;
 pub use ate::SetEcho;
@@ -62,3 +63,4 @@ pub use ipr::{BaudRate, SetBaudRate};
 pub use csocksetpn1::Csocksetpn1;
 pub use cipmode1:: Cipmode1;
 pub use netopen:: Netopen;
+pub use cgdcount:: Cgdcount;

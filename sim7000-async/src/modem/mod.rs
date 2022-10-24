@@ -143,16 +143,19 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             .run(cmee::ConfigureCMEErrors(CMEErrorMode::Numeric))
             .await?;
         defmt::info!("S12");
-        commands.run(Cipmode1).await?;
+        commands.run(Cgdcount).await?;
         defmt::info!("S13");
-        commands.run(Csocksetpn).await?;
-        //commands.run(cmnb::SetNbMode(NbMode::CatM)).await?;
+        commands.run(Cipmode1).await?;
         defmt::info!("S14");
+        commands.run(Csocksetpn1).await?;
+        //commands.run(cmnb::SetNbMode(NbMode::CatM)).await?;
+        defmt::info!("S15");
         commands.run(Netopen).await?;
         //commands.run(cfgri::ConfigureRiPin(RiPinMode::On)).await?;
-        defmt::info!("S15");
-        //commands.run(cbatchk::EnableVBatCheck(true)).await?;
         defmt::info!("S16");
+        commands.run(Cgdcount).await?;
+        //commands.run(cbatchk::EnableVBatCheck(true)).await?;
+        
         /* 
         let configure_edrx = cedrxs::ConfigureEDRX {
             n: EDRXSetting::Enable,
