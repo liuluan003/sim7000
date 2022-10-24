@@ -29,6 +29,9 @@ pub mod csq;
 pub mod cstt;
 pub mod ifc;
 pub mod ipr;
+pub mod csocksetpn1;
+pub mod Cipmode1;
+pub mod Netopen;
 
 pub use at::At;
 pub use ate::SetEcho;
@@ -56,3 +59,6 @@ pub use csq::GetSignalQuality;
 pub use cstt::StartTask;
 pub use ifc::{FlowControl, SetFlowControl};
 pub use ipr::{BaudRate, SetBaudRate};
+pub use csocksetpn1::Csocksetpn1;
+pub use cipmode1:: Cipmode1;
+pub use netopen:: Netopen;

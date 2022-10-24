@@ -143,10 +143,12 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             .run(cmee::ConfigureCMEErrors(CMEErrorMode::Numeric))
             .await?;
         defmt::info!("S12");
-        //commands.run(cnmp::SetNetworkMode(NetworkMode::Lte)).await?;
+        commands.run(Cipmode1).await?;
         defmt::info!("S13");
+        commands.run(Csocksetpn).await?;
         //commands.run(cmnb::SetNbMode(NbMode::CatM)).await?;
         defmt::info!("S14");
+        commands.run(Netopen).await?;
         //commands.run(cfgri::ConfigureRiPin(RiPinMode::On)).await?;
         defmt::info!("S15");
         //commands.run(cbatchk::EnableVBatCheck(true)).await?;
@@ -183,11 +185,13 @@ impl<'c, P: ModemPower> Modem<'c, P> {
         // unwrap is fine here since the modem is the only code creating publishers, there will always be a free slot.
         let publisher = self.context.power_signal.publisher().unwrap();
         publisher.publish(true).await;
+        defmt::info!("A1");
         self.power.enable().await;
         let set_flow_control = ifc::SetFlowControl {
             dce_by_dte: FlowControl::Hardware,
             dte_by_dce: FlowControl::Hardware,
         };
+        defmt::info!("A2");
 
         let commands = self.commands.lock().await;
 
@@ -199,16 +203,20 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             {
                 break;
             }
-        }
+        } 
+        defmt::info!("A3");
         commands.run(ate::SetEcho(false)).await?;
         commands
             .run(cgreg::ConfigureRegistrationUrc::EnableRegLocation)
             .await?;
 
         self.wait_for_registration(&commands).await?;
+        defmt::info!("A4");
 
         commands.run(cipmux::EnableMultiIpConnection(true)).await?;
+        defmt::info!("A5");
         commands.run(cipshut::ShutConnections).await?;
+        defmt::info!("A6");
 
         self.authenticate(&commands).await?;
         Ok(())

@@ -92,19 +92,21 @@ async fn main(spawner: Spawner) {
 
 
     defmt::info!("T1");
-
     defmt::info!("Activating modem");
     modem.activate().await.unwrap();
 
     defmt::info!("T2");
-
     defmt::info!("sleeping 1s");
     Timer::after(Duration::from_millis(1000)).await;
 
+    
+    //no voltage checking 
+    /*
     match modem.claim_voltage_warner().await {
         Some(warner) => spawner.must_spawn(example::voltage_warn(warner)),
         None => defmt::error!("Failed to take VoltageWarner handle"),
     }
+    */
     /* no internal GNSS
     match modem.claim_gnss().await {
      
