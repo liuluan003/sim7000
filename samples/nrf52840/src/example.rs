@@ -43,7 +43,7 @@ pub async fn gnss(gnss: Gnss<'static>) {
     }
 }
 
-pub async fn ping_tcpbin(
+pub async fn  ping_tcpbin(
     spawner: &Spawner,
     modem: &mut Modem,
 ) -> Result<impl Future<Output = Result<(), Error>>, Error> {
@@ -78,8 +78,9 @@ pub async fn ping_tcpbin(
     }
 
     defmt::info!("Connecting to tcpbin.com");
-    let stream = modem.connect_tcp("tcpbin.com", 4242).await?;
-
+   //let stream = modem.connect_tcp("tcpbin.com", 4242).await?;
+    let stream = modem.connect_tcp("46.39.103.234", 20000).await?;
+    
     spawner.spawn(task(stream))?;
     Ok(TASK_CHANNEL.recv())
 }

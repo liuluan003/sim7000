@@ -95,9 +95,9 @@ async fn main(spawner: Spawner) {
     defmt::info!("Activating modem");
     modem.activate().await.unwrap();
 
-    defmt::info!("T2");
-    defmt::info!("sleeping 1s");
-    Timer::after(Duration::from_millis(1000)).await;
+    //defmt::info!("T2");
+    //defmt::info!("sleeping 1s");
+    //Timer::after(Duration::from_millis(1000)).await;
 
     
     //no voltage checking 
@@ -117,11 +117,12 @@ async fn main(spawner: Spawner) {
   */
     //defmt::info!("sleeping 5s");
     //Timer::after(Duration::from_millis(5000)).await;
-    defmt::info!("T3");
+    //defmt::info!("T3");
     //defmt::info!("Signal quality: {:?}", modem.query_signal().await);
     //defmt::info!("System info: {:?}", modem.query_system_info().await);
-    defmt::info!("T4");
+   // defmt::info!("T4");
     for _ in 0..100 {
+        defmt::info!("Z1");
         defmt::info!("sleeping 1s");
         Timer::after(Duration::from_millis(1000)).await;
 
@@ -130,11 +131,13 @@ async fn main(spawner: Spawner) {
             .await
             .map_err(|e| defmt::error!("Failed to spawn ping_tcpbin: {:?}", e))
             .ok();
-
+        
+       
         let qotd_handle = example::get_quote_of_the_day(&spawner, &mut modem)
             .await
             .map_err(|e| defmt::error!("Failed to spawn Quote of the Day: {:?}", e))
             .ok();
+        
 
         defmt::info!("await tcpbin");
         if let Some(handle) = tcpbin_handle {
@@ -149,6 +152,7 @@ async fn main(spawner: Spawner) {
                 defmt::error!("get QotD failed: {:?}", e);
             }
         }
+        /*  */
     }
     defmt::info!("T6");
     defmt::info!("main() finished");

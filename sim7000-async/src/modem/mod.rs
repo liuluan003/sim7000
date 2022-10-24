@@ -138,11 +138,12 @@ impl<'c, P: ModemPower> Modem<'c, P> {
         defmt::info!("S10");
         commands.run(ipr::SetBaudRate(BaudRate::Hz115200)).await?;
         defmt::info!("S11");
+        /* 
         commands.run(set_flow_control).await?;
         commands
             .run(cmee::ConfigureCMEErrors(CMEErrorMode::Numeric))
             .await?;
-
+        */
         /* 
         defmt::info!("S12");
         commands.run(Cgdcount).await?;
@@ -186,10 +187,15 @@ impl<'c, P: ModemPower> Modem<'c, P> {
 
     pub async fn activate(&mut self) -> Result<(), Error> {
         // unwrap is fine here since the modem is the only code creating publishers, there will always be a free slot.
+        
+        /*
         let publisher = self.context.power_signal.publisher().unwrap();
         publisher.publish(true).await;
         defmt::info!("A1");
         self.power.enable().await;
+        */
+
+
         let set_flow_control = ifc::SetFlowControl {
             dce_by_dte: FlowControl::Hardware,
             dte_by_dce: FlowControl::Hardware,
@@ -214,19 +220,26 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             .await?;
         */ 
             defmt::info!("S12");
-            commands.run(Cgdcount).await?;
-            defmt::info!("S13");
-            commands.run(Cipmode0).await?;
-            Timer::after(Duration::from_millis(1000)).await;
-            defmt::info!("S14");
             commands.run(Csocksetpn1).await?;
-            Timer::after(Duration::from_millis(1000)).await;
+            
+            defmt::info!("S13");
+            commands.run(Cgdcount).await?;
+            
+            Timer::after(Duration::from_millis(500)).await;
+            defmt::info!("S14");
+            commands.run(Cipmode0).await?;
+            Timer::after(Duration::from_millis(500)).await;
             defmt::info!("S15");
             commands.run(Netopen).await?;
-            Timer::after(Duration::from_millis(1000)).await;
+            Timer::after(Duration::from_millis(500)).await;
             defmt::info!("S16");
             commands.run(Cifsr).await?;
-            Timer::after(Duration::from_millis(1000)).await;
+            Timer::after(Duration::from_millis(100)).await;
+            //defmt::info!("S16");
+            //commands.run(Connect_test).await?;
+            //Timer::after(Duration::from_millis(500)).await;
+
+            
             
         /*
         self.wait_for_registration(&commands).await?;
