@@ -145,19 +145,7 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             .run(cmee::ConfigureCMEErrors(CMEErrorMode::Numeric))
             .await?;
         */
-        /* 
-        defmt::info!("S12");
-        commands.run(Cgdcount).await?;
-        defmt::info!("S13");
-        commands.run(Cipmode1).await?;
-        defmt::info!("S14");
-        commands.run(Csocksetpn1).await?;
-        defmt::info!("S15");
-        commands.run(Netopen).await?;
-        Timer::after(Duration::from_millis(1000)).await;
-        defmt::info!("S16");
-        commands.run(Cifsr).await?;
-        */
+
         /* 
         let configure_edrx = cedrxs::ConfigureEDRX {
             n: EDRXSetting::Enable,
@@ -255,6 +243,8 @@ impl<'c, P: ModemPower> Modem<'c, P> {
 
         */
        // self.authenticate(&commands).await?;
+
+
         Ok(())
     }
 

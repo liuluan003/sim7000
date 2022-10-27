@@ -37,12 +37,14 @@ impl ATParseLine for Connection {
         //let index = index.parse()?;
 
         let message = line.strip_prefix("+CIPOPEN: ").ok_or("Missing '+CIPOPEN: '")?;
-
-        defmt::info!("Me1{}",message );
-        let (index, message) = line.split_once(", ").ok_or("Missing ', '")?;
+        defmt::info!("Me0={}",line );
+        defmt::info!("Me1={}",message );
+        let (index, message) = message.split_once(",").ok_or("Missing ','")?;
+        defmt::info!("Me2={},{}",index, message );
         let index = index.parse()?;
 
-        defmt::info!("Me2={},{}",index, message );
+        defmt::info!("Me3={}",index );
+        defmt::info!("Me4={}",message );
 
         use ConnectionMessage::*;
         let message = match message {
