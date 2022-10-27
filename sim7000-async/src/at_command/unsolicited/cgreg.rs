@@ -14,6 +14,7 @@ pub enum RegistrationStatus {
 
 impl ATParseLine for RegistrationStatus {
     fn from_line(line: &str) -> Result<Self, ATParseErr> {
+        //defmt::info!("Mes5");
         let (message, rest) = line.split_once(": ").ok_or("Missing ': '")?;
         if message != "+CGREG" {
             return Err("Missing '+CGREG'".into());

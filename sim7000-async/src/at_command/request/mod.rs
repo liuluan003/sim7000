@@ -69,6 +69,6 @@ pub use cipmode1:: Cipmode1;
 pub use cipmode0:: Cipmode0;
 pub use netopen:: Netopen;
 pub use cgdcount:: Cgdcount;
-pub use cifsr:: Cifsr;
+pub use cifsr:: GetCifsrResult;
 pub use connect_test:: Connect_test;
 pub use cipopenlink:: {Cipopenlink, CipopenlinkMode};

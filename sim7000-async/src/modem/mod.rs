@@ -86,12 +86,12 @@ impl<'c, P: ModemPower> Modem<'c, P> {
 
     pub async fn init(&mut self) -> Result<(), Error> {
         self.deactivate().await;
-        defmt::info!("S0");
+        //defmt::info!("S0");
         let publisher = self.context.power_signal.publisher().unwrap();
         publisher.publish(true).await;
-        defmt::info!("S1");
+        //defmt::info!("S1");
         self.power.enable().await;
-        defmt::info!("S2");
+       // defmt::info!("S2");
 
         let commands = self.commands.lock().await;
         defmt::info!("S3");
@@ -233,9 +233,10 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             commands.run(Netopen).await?;
             Timer::after(Duration::from_millis(1000)).await;
             defmt::info!("S16");
-            commands.run(Cifsr).await?;
+            //commands.run(GetCifsrResult).await?;
+            commands.run(GetLocalIpExt).await?;
             Timer::after(Duration::from_millis(100)).await;
-            //defmt::info!("S16");
+            //defmt::info!("S17");
             //commands.run(Connect_test).await?;
             //Timer::after(Duration::from_millis(500)).await;
 
@@ -306,8 +307,8 @@ impl<'c, P: ModemPower> Modem<'c, P> {
         self.commands
             .lock()
             .await
-            .run(cipopenlink::Cipopenlink {
-                mode: CipopenlinkMode::Tcp,
+            .run(cipstart::Connect {
+                mode: ConnectMode::Tcp,
                 number: tcp_context.ordinal(),
                 destination: host.try_into().map_err(|_| Error::BufferOverflow)?,
                 port,
@@ -319,6 +320,7 @@ impl<'c, P: ModemPower> Modem<'c, P> {
                 ConnectionMessage::Connected => break,
                 ConnectionMessage::ConnectionFailed => panic!("connection failed"), //TODO
                 _ => {}
+              //niklas 2022
             }
         }
 

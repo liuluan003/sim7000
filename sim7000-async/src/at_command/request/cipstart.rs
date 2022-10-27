@@ -34,8 +34,8 @@ impl ATRequest for Connect {
         let mut buf = String::new();
         write!(
             buf,
-            "AT+CIPSTART={},{:?},{:?},\"{}\"\r",
-            //"AT+CIPOPEN={},{:?},{:?},{}\r", //niklas 20221024
+            //"AT+CIPSTART={},{:?},{:?},\"{}\"\r",
+            "AT+CIPOPEN={},{:?},{:?},{}\r", //niklas 20221024
             self.number, mode, self.destination, self.port
         )
         .unwrap();

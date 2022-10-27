@@ -5,8 +5,8 @@ use super::{AtCommand, AtDecode, AtEncode, AtWrite, ConnectionState, Decoder, En
 pub struct Cipstart;
 
 impl AtCommand for Cipstart {
-    const COMMAND: &'static str = "AT+CIPSTART";
-}
+    //const COMMAND: &'static str = "AT+CIPSTART";
+    const COMMAND: &'static str = "AT+CIPOPEN";//niklas 2022
 
 pub struct TcpConnectionParams<'a> {
     pub mode: &'static str,
@@ -29,7 +29,7 @@ impl<'a> AtEncode for TcpConnectionParams<'a> {
     }
 }
 
-#[derive(Clone, Copy, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq)] 
 pub enum ConnectionResult {
     Failure,
     Success,
@@ -46,6 +46,7 @@ impl AtDecode for ConnectionResult {
         let status = match decoder.remainder_str(timeout_ms)? {
             "CONNECT OK" => ConnectionResult::Success,
             "ALREADY CONNECT" => ConnectionResult::Success,
+            //"+CIPOPEN: 0,0" => ConnectionResult::Success,
             _ => {
                 decoder.expect_str("STATE: ", timeout_ms)?;
                 let _ = ConnectionState::try_from(decoder.remainder_str(timeout_ms)?)

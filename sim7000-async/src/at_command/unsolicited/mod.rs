@@ -22,6 +22,9 @@ mod remote_ip;
 mod sms_ready;
 mod ugnsinf;
 mod voltage_warning;
+mod sms_done;
+mod pb_done;
+mod netopen;
 
 pub use app_pdp::AppNetworkActive;
 pub use cfun::CFun;
@@ -33,6 +36,8 @@ pub use cring::CRing;
 pub use ctzv::Ctzv;
 pub use cusd::CUsd;
 pub use dst::Dst;
+
+
 pub use pdp::GprsDisconnected;
 pub use power_down::PowerDown;
 pub use psnwid::Pdnwid;
@@ -43,6 +48,10 @@ pub use remote_ip::IncomingConnection;
 pub use sms_ready::SmsReady;
 pub use ugnsinf::{GnssFix, GnssReport};
 pub use voltage_warning::VoltageWarning;
+pub use sms_done::SmsDone;
+pub use pb_done::PbDone;
+pub use netopen::Netopen;
+
 
 /// Unsolicited Response Code
 #[derive(Debug)]
@@ -67,6 +76,9 @@ pub enum Urc {
     ReceiveHeader(ReceiveHeader),
     RegistrationStatus(RegistrationStatus),
     VoltageWarning(VoltageWarning),
+    SmsDone(SmsDone),
+    PbDone(PbDone),
+    Netopen(Netopen),
 }
 
 impl ATParseLine for Urc {
@@ -99,6 +111,9 @@ impl ATParseLine for Urc {
             .or_else(parse(line, Urc::ReceiveHeader))
             .or_else(parse(line, Urc::RegistrationStatus))
             .or_else(parse(line, Urc::VoltageWarning))
+            .or_else(parse(line, Urc::SmsDone))
+            .or_else(parse(line, Urc::PbDone))
+            .or_else(parse(line, Urc::Netopen))
             .map_err(|_| ATParseErr::from("Failed to parse as a URC"))
     }
 }

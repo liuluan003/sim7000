@@ -4,11 +4,13 @@ pub mod ccid;
 pub mod cifsrex;
 pub mod cpsi;
 pub mod csq;
+pub mod cifsr;
 
 pub use ccid::Iccid;
 pub use cifsrex::IpExt;
 pub use cpsi::{OperationMode, SystemInfo, SystemMode};
 pub use csq::SignalQuality;
+pub use cifsr::CifsrResult;
 
 #[derive(Debug)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
@@ -125,6 +127,7 @@ pub enum ResponseCode {
     IpExt(IpExt),
     Iccid(Iccid),
     SignalQuality(SignalQuality),
+    CifsrResult(CifsrResult),
     SystemInfo(SystemInfo),
 }
 
@@ -146,6 +149,7 @@ impl ATParseLine for ResponseCode {
             .or_else(parse(line, ResponseCode::IpExt))
             .or_else(parse(line, ResponseCode::Iccid))
             .or_else(parse(line, ResponseCode::SignalQuality))
+            .or_else(parse(line, ResponseCode::CifsrResult))
             .or_else(parse(line, ResponseCode::SystemInfo))
             .map_err(|_| "Unknown response code".into())
     }

@@ -31,23 +31,38 @@ pub enum ConnectionMessage {
 
 impl ATParseLine for Connection {
     fn from_line(line: &str) -> Result<Self, ATParseErr> {
+        //defmt::info!("Mes0");
+
+        //let (index, message) = line.split_once(", ").ok_or("Missing ', '")?;
+        //let index = index.parse()?;
+
+        let message = line.strip_prefix("+CIPOPEN: ").ok_or("Missing '+CIPOPEN: '")?;
+
+        defmt::info!("Me1{}",message );
         let (index, message) = line.split_once(", ").ok_or("Missing ', '")?;
         let index = index.parse()?;
 
+        defmt::info!("Me2={},{}",index, message );
+
         use ConnectionMessage::*;
         let message = match message {
+            /*
             "CLOSED" => Closed, 
             "SEND OK" => SendSuccess,
             "SEND FAIL" => SendFail,
             "CONNECT OK" => Connected,
-            //"OK" => Connected, //Niklas 2022
+            //"+CIPOPEN: 0,0" => Connected, //Niklas 2022
             "CONNECT FAIL" => ConnectionFailed,
             "ALREADY CONNECT" => AlreadyConnected,
+            */
+            "0" => Connected, //Niklas 2022
+            "1" => ConnectionFailed, //Niklas 2022
+            "2" => SendFail, //Niklas 2022
             _ => {
                 return Err("Invalid connection message".into());
             }
         };
-
+        //Ok(Connection { message }) //niklas
         Ok(Connection { index, message })
     }
 }
