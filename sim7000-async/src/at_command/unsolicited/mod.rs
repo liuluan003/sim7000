@@ -25,6 +25,7 @@ mod voltage_warning;
 mod sms_done;
 mod pb_done;
 mod netopen;
+mod cipopen;
 
 pub use app_pdp::AppNetworkActive;
 pub use cfun::CFun;
@@ -51,7 +52,7 @@ pub use voltage_warning::VoltageWarning;
 pub use sms_done::SmsDone;
 pub use pb_done::PbDone;
 pub use netopen::Netopen;
-
+pub use cipopen::Cipopen;
 
 /// Unsolicited Response Code
 #[derive(Debug)]
@@ -79,6 +80,7 @@ pub enum Urc {
     SmsDone(SmsDone),
     PbDone(PbDone),
     Netopen(Netopen),
+    Cipopen(Cipopen),
 }
 
 impl ATParseLine for Urc {
@@ -114,6 +116,7 @@ impl ATParseLine for Urc {
             .or_else(parse(line, Urc::SmsDone))
             .or_else(parse(line, Urc::PbDone))
             .or_else(parse(line, Urc::Netopen))
+            .or_else(parse(line, Urc::Cipopen))
             .map_err(|_| ATParseErr::from("Failed to parse as a URC"))
     }
 }
