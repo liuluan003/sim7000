@@ -78,8 +78,8 @@ pub async fn  ping_tcpbin(
     }
 
     defmt::info!("Connecting to tcpbin.com");
-   let stream = modem.connect_tcp("tcpbin.com", 4242).await?;
-    //let stream = modem.connect_tcp("46.39.103.234", 20000).await?;
+    //let stream = modem.connect_tcp("tcpbin.com", 4242).await?;  //ip 45.79.112.203
+    let stream = modem.connect_tcp("46.39.103.234", 20000).await?;
     
     spawner.spawn(task(stream))?;
     Ok(TASK_CHANNEL.recv())
