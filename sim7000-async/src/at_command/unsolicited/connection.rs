@@ -36,10 +36,11 @@ impl ATParseLine for Connection {
 
         use ConnectionMessage::*;
         let message = match message {
-            "CLOSED" => Closed,
+            "CLOSED" => Closed, 
             "SEND OK" => SendSuccess,
             "SEND FAIL" => SendFail,
             "CONNECT OK" => Connected,
+            //"OK" => Connected, //Niklas 2022
             "CONNECT FAIL" => ConnectionFailed,
             "ALREADY CONNECT" => AlreadyConnected,
             _ => {

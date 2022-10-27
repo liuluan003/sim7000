@@ -306,8 +306,8 @@ impl<'c, P: ModemPower> Modem<'c, P> {
         self.commands
             .lock()
             .await
-            .run(cipstart::Connect {
-                mode: ConnectMode::Tcp,
+            .run(cipopenlink::Cipopenlink {
+                mode: CipopenlinkMode::Tcp,
                 number: tcp_context.ordinal(),
                 destination: host.try_into().map_err(|_| Error::BufferOverflow)?,
                 port,

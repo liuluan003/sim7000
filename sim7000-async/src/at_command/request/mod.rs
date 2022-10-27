@@ -36,6 +36,7 @@ pub mod netopen;
 pub mod cgdcount;
 pub mod cifsr;
 pub mod connect_test;
+pub mod cipopenlink;
 
 pub use at::At;
 pub use ate::SetEcho;
@@ -70,3 +71,4 @@ pub use netopen:: Netopen;
 pub use cgdcount:: Cgdcount;
 pub use cifsr:: Cifsr;
 pub use connect_test:: Connect_test;
+pub use cipopenlink:: {Cipopenlink, CipopenlinkMode};
