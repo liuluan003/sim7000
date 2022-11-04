@@ -88,12 +88,21 @@ async fn main(spawner: Spawner) {
             ri: Input::new(p_2.P1_07.degrade(), Pull::Up),
         };
         
-        let mut LC79D_PEN = Output::new(
-            p_2.P1_00.degrade(),
+        let mut LC79_AP_REQ = Output::new(
+            p_2.P1_06.degrade(),
             embassy_nrf::gpio::Level::High,
             embassy_nrf::gpio::OutputDrive::Standard,
         );
 
+        let mut LC79D_PEN = Output::new(
+            p_2.P0_12.degrade(),
+            embassy_nrf::gpio::Level::High,
+            embassy_nrf::gpio::OutputDrive::Standard,
+        );
+
+
+
+        // LC79_BOOT and LC79_STANDBY are controlled by the extender MCP23008-E_SS
 
 
         LC79D_PEN.set_low();
@@ -106,6 +115,8 @@ async fn main(spawner: Spawner) {
             UarteComponents_2 as UarteComponents_2  { uarte: p_2.UARTE1, timer: p_2.TIMER1, ppi_ch3: p_2.PPI_CH3, ppi_ch4: p_2.PPI_CH4, irq, rxd: p_2.P0_06.degrade(), txd: p_2.P0_08.degrade(), rts: p_2.P0_07.degrade(), cts: p_2.P1_10.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
             lc79d_power_pins
         );
+
+
      /*    
 */
 
