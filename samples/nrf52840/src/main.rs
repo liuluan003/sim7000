@@ -72,9 +72,9 @@ async fn main(spawner: Spawner) {
         defmt::debug!("log-level: debug");
         defmt::trace!("log-level: trace");
     
-        defmt::info!("Started");
+        defmt::info!("Started"); 
 
-        let irq_lc79d = interrupt::take!(UARTE1);
+        let mut irq_lc79d = interrupt::take!(UARTE0_UART0);
         let mut config_lc79d = uarte::Config::default();
         config_lc79d.parity = uarte::Parity::EXCLUDED;
         config_lc79d.baudrate = uarte::Baudrate::BAUD115200;
@@ -112,10 +112,13 @@ async fn main(spawner: Spawner) {
     
         let mut lc79d_modem = spawn_modem!(
             &spawner,
-            UarteComponents_2 as UarteComponents_2  { uarte: p_2.UARTE1, timer: p_2.TIMER1, ppi_ch3: p_2.PPI_CH3, ppi_ch4: p_2.PPI_CH4, irq, rxd: p_2.P0_15.degrade(), txd: p_2.P0_14.degrade(), rts: p_2.P1_12.degrade(), cts: p_2.P0_16.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
+            UarteComponents_2 as UarteComponents_2  { uarte: p_2.UARTE0, timer: p_2.TIMER0, ppi_ch1: p_2.PPI_CH1, ppi_ch2: p_2.PPI_CH2, irq_lc79d, rxd: p_2.P0_15.degrade(), txd: p_2.P0_14.degrade(), rts: p_2.P1_02.degrade(), cts: p_2.P0_16.degrade(), config_lc79d, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
             lc79d_power_pins
         );
 
+        defmt::info!("T0");
+        defmt::info!("Initializing 4G modem");
+        lc79d_modem.init().await.unwrap();
 
      /*    
 */
@@ -132,11 +135,12 @@ async fn main(spawner: Spawner) {
 
     defmt::info!("Started");
 
-
-    let irq = interrupt::take!(UARTE0_UART0);
+    /* */
+    let mut irq = interrupt::take!(UARTE0_UART0);
     let mut config = uarte::Config::default();
     config.parity = uarte::Parity::EXCLUDED;
     config.baudrate = uarte::Baudrate::BAUD115200;
+   
 
 
     let sim7600_power_pins = ModemPowerPins {
@@ -288,17 +292,17 @@ impl BuildIo for UarteComponents_1 {
 
 
 struct UarteComponents_2 {
-    pub uarte: UARTE1,
-    pub timer: TIMER1,
-    pub ppi_ch3: PPI_CH3,
-    pub ppi_ch4: PPI_CH4,
-    pub irq: UARTE1,
+    pub uarte: UARTE0,
+    pub timer: TIMER0,
+    pub ppi_ch1: PPI_CH1,
+    pub ppi_ch2: PPI_CH2,
+    pub irq_lc79d: UARTE0_UART0,
     pub rxd: AnyPin,
     pub txd: AnyPin,
     pub rts: AnyPin,
     pub cts: AnyPin,
-    pub config: uarte::Config,
-    pub state: State<'static, UARTE1, TIMER1>,
+    pub config_lc79d: uarte::Config,
+    pub state: State<'static, UARTE0, TIMER0>,
     pub tx_buffer: [u8; 64],
     pub rx_buffer: [u8; 64],
 }
@@ -311,28 +315,82 @@ impl BuildIo for UarteComponents_2 {
     fn build<'d>(&'d mut self) -> Self::IO<'d> {
         let state = unsafe {
             core::mem::transmute::<
-                &'d mut State<'static, UARTE1, TIMER1>,
-                &'d mut State<'d, UARTE1, TIMER1>,
+                &'d mut State<'static, UARTE0, TIMER0>,
+                &'d mut State<'d, UARTE0, TIMER0>,
             >(&mut self.state)
         };
         AppUarte(BufferedUarte::new(
             state,
             &mut self.uarte,
             &mut self.timer,
-            &mut self.ppi_ch3,
-            &mut self.ppi_ch4,
-            &mut self.irq,
+            &mut self.ppi_ch1,
+            &mut self.ppi_ch2,
+            &mut self.irq_lc79d,
             &mut self.rxd,
             &mut self.txd,
             &mut self.cts,
             &mut self.rts,
-            self.config.clone(),
+            self.config_lc79d.clone(),
             &mut self.rx_buffer,
             &mut self.tx_buffer,
         ))
     }
 }
+
+
+
 /* 
+
+
+struct UarteComponents_3 {
+    pub uarte: UARTE1,
+    pub timer: TIMER1,
+    pub ppi_ch1: PPI_CH3,
+    pub ppi_ch2: PPI_CH4,
+    pub irq_lc79d: UARTE1,
+    pub rxd: AnyPin,
+    pub txd: AnyPin,
+    pub rts: AnyPin,
+    pub cts: AnyPin,
+    pub config_lc79d: uarte::Config,
+    pub state: State<'static, UARTE0, TIMER0>,
+    pub tx_buffer: [u8; 64],
+    pub rx_buffer: [u8; 64],
+}
+
+impl BuildIo for UarteComponents_3 {
+    type IO<'d> = AppUarte<'d>
+    where
+    Self: 'd;
+
+    fn build<'d>(&'d mut self) -> Self::IO<'d> {
+        let state = unsafe {
+            core::mem::transmute::<
+                &'d mut State<'static, UARTE0, TIMER0>,
+                &'d mut State<'d, UARTE0, TIMER0>,
+            >(&mut self.state)
+        };
+        AppUarte(BufferedUarte::new(
+            state,
+            &mut self.uarte,
+            &mut self.timer,
+            &mut self.ppi_ch1,
+            &mut self.ppi_ch2,
+            &mut self.irq_lc79d,
+            &mut self.rxd,
+            &mut self.txd,
+            &mut self.cts,
+            &mut self.rts,
+            self.config_lc79d.clone(),
+            &mut self.rx_buffer,
+            &mut self.tx_buffer,
+        ))
+    }
+}
+
+
+
+
 
 */
 
