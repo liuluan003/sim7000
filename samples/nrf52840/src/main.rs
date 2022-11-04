@@ -25,13 +25,28 @@ mod example;
 
 use core::future::Future;
 use embassy_executor::Spawner;
+
+
 use embassy_nrf::{
     buffered_uarte::{BufferedUarte, BufferedUarteRx, BufferedUarteTx, State},
     gpio::{AnyPin, Input, Level, Output, OutputDrive, Pin, Pull},
     interrupt::{self, UARTE0_UART0},
-    peripherals::{PPI_CH1, PPI_CH2, TIMER0, UARTE0},
+    peripherals::{PPI_CH1, PPI_CH2, PPI_CH3, PPI_CH4,TIMER0, UARTE0,TIMER1,UARTE1},
     uarte,
 };
+
+
+
+/* 
+use embassy_nrf::{
+    buffered_uarte::{BufferedUarte, BufferedUarteRx, BufferedUarteTx, State},
+    gpio::{AnyPin, Input, Level, Output, OutputDrive, Pin, Pull},
+    interrupt::{self, UARTE1_UART1},
+    peripherals::{PPI_CH3, PPI_CH4, TIMER1, UARTE1},
+    uarte,
+};
+*/
+
 use embassy_time::{with_timeout, Duration, Timer};
 use sim7000_async::{spawn_modem, BuildIo, ModemPower, PowerState, SplitIo};
 
@@ -45,7 +60,58 @@ type Modem = sim7000_async::modem::Modem<'static, ModemPowerPins>;
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
-    let p = embassy_nrf::init(Default::default());
+
+
+
+        //lc79d init
+        let p_2 = embassy_nrf::init(Default::default());
+
+        defmt::error!("log-level: error");
+        defmt::warn!("log-level: warn");
+        defmt::info!("log-level: info");
+        defmt::debug!("log-level: debug");
+        defmt::trace!("log-level: trace");
+    
+        defmt::info!("Started");
+
+        let irq_lc79d = interrupt::take!(UARTE1);
+        let mut config_lc79d = uarte::Config::default();
+        config_lc79d.parity = uarte::Parity::EXCLUDED;
+        config_lc79d.baudrate = uarte::Baudrate::BAUD115200;
+    
+    
+        let lc79d_power_pins = ModemPowerPins {
+            status: Input::new(p_2.P1_12.degrade(), Pull::None),
+            power_key: Output::new(p_2.P1_05.degrade(), Level::Low, OutputDrive::Standard),
+            dtr: Output::new(p_2.P0_13.degrade(), Level::Low, OutputDrive::Standard),
+            reset: Output::new(p_2.P1_04.degrade(), Level::Low, OutputDrive::Standard),
+            ri: Input::new(p_2.P1_07.degrade(), Pull::Up),
+        };
+        
+        let mut LC79D_PEN = Output::new(
+            p_2.P1_00.degrade(),
+            embassy_nrf::gpio::Level::High,
+            embassy_nrf::gpio::OutputDrive::Standard,
+        );
+
+
+
+        LC79D_PEN.set_low();
+        Timer::after(Duration::from_millis(1500)).await;
+        LC79D_PEN.set_high();
+    
+    
+        let mut lc79d_modem = spawn_modem!(
+            &spawner,
+            UarteComponents_2 as UarteComponents_2  { uarte: p_2.UARTE1, timer: p_2.TIMER1, ppi_ch3: p_2.PPI_CH3, ppi_ch4: p_2.PPI_CH4, irq, rxd: p_2.P0_06.degrade(), txd: p_2.P0_08.degrade(), rts: p_2.P0_07.degrade(), cts: p_2.P1_10.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
+            lc79d_power_pins
+        );
+     /*    
+*/
+
+    //sim7600 init
+
+    let p1 = embassy_nrf::init(Default::default());
 
     defmt::error!("log-level: error");
     defmt::warn!("log-level: warn");
@@ -55,6 +121,7 @@ async fn main(spawner: Spawner) {
 
     defmt::info!("Started");
 
+
     let irq = interrupt::take!(UARTE0_UART0);
     let mut config = uarte::Config::default();
     config.parity = uarte::Parity::EXCLUDED;
@@ -62,15 +129,15 @@ async fn main(spawner: Spawner) {
 
 
     let sim7600_power_pins = ModemPowerPins {
-        status: Input::new(p.P1_12.degrade(), Pull::None),
-        power_key: Output::new(p.P1_05.degrade(), Level::Low, OutputDrive::Standard),
-        dtr: Output::new(p.P0_13.degrade(), Level::Low, OutputDrive::Standard),
-        reset: Output::new(p.P1_04.degrade(), Level::Low, OutputDrive::Standard),
-        ri: Input::new(p.P1_07.degrade(), Pull::Up),
+        status: Input::new(p1.P1_12.degrade(), Pull::None),
+        power_key: Output::new(p1.P1_05.degrade(), Level::Low, OutputDrive::Standard),
+        dtr: Output::new(p1.P0_13.degrade(), Level::Low, OutputDrive::Standard),
+        reset: Output::new(p1.P1_04.degrade(), Level::Low, OutputDrive::Standard),
+        ri: Input::new(p1.P1_07.degrade(), Pull::Up),
     };
     
     let mut SIM7600_PEN = Output::new(
-        p.P1_00.degrade(),
+        p1.P1_00.degrade(),
         embassy_nrf::gpio::Level::High,
         embassy_nrf::gpio::OutputDrive::Standard,
     );
@@ -83,7 +150,7 @@ async fn main(spawner: Spawner) {
 
     let mut modem = spawn_modem!(
         &spawner,
-        UarteComponents as UarteComponents { uarte: p.UARTE0, timer: p.TIMER0, ppi_ch1: p.PPI_CH1, ppi_ch2: p.PPI_CH2, irq, rxd: p.P0_06.degrade(), txd: p.P0_08.degrade(), rts: p.P0_07.degrade(), cts: p.P1_10.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
+        UarteComponents_1 as UarteComponents_1 { uarte: p1.UARTE0, timer: p1.TIMER0, ppi_ch1: p1.PPI_CH1, ppi_ch2: p1.PPI_CH2, irq, rxd: p1.P0_06.degrade(), txd: p1.P0_08.degrade(), rts: p1.P0_07.degrade(), cts: p1.P1_10.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
         sim7600_power_pins
     );
     defmt::info!("T0");
@@ -162,7 +229,7 @@ async fn main(spawner: Spawner) {
     }
 }
 
-struct UarteComponents {
+struct UarteComponents_1 {
     pub uarte: UARTE0,
     pub timer: TIMER0,
     pub ppi_ch1: PPI_CH1,
@@ -178,7 +245,7 @@ struct UarteComponents {
     pub rx_buffer: [u8; 64],
 }
 
-impl BuildIo for UarteComponents {
+impl BuildIo for UarteComponents_1 {
     type IO<'d> = AppUarte<'d>
     where
     Self: 'd;
@@ -207,6 +274,56 @@ impl BuildIo for UarteComponents {
         ))
     }
 }
+
+
+struct UarteComponents_2 {
+    pub uarte: UARTE1,
+    pub timer: TIMER1,
+    pub ppi_ch3: PPI_CH3,
+    pub ppi_ch4: PPI_CH4,
+    pub irq: UARTE1,
+    pub rxd: AnyPin,
+    pub txd: AnyPin,
+    pub rts: AnyPin,
+    pub cts: AnyPin,
+    pub config: uarte::Config,
+    pub state: State<'static, UARTE1, TIMER1>,
+    pub tx_buffer: [u8; 64],
+    pub rx_buffer: [u8; 64],
+}
+
+impl BuildIo for UarteComponents_2 {
+    type IO<'d> = AppUarte<'d>
+    where
+    Self: 'd;
+
+    fn build<'d>(&'d mut self) -> Self::IO<'d> {
+        let state = unsafe {
+            core::mem::transmute::<
+                &'d mut State<'static, UARTE1, TIMER1>,
+                &'d mut State<'d, UARTE1, TIMER1>,
+            >(&mut self.state)
+        };
+        AppUarte(BufferedUarte::new(
+            state,
+            &mut self.uarte,
+            &mut self.timer,
+            &mut self.ppi_ch3,
+            &mut self.ppi_ch4,
+            &mut self.irq,
+            &mut self.rxd,
+            &mut self.txd,
+            &mut self.cts,
+            &mut self.rts,
+            self.config.clone(),
+            &mut self.rx_buffer,
+            &mut self.tx_buffer,
+        ))
+    }
+}
+/* 
+
+*/
 
 struct AppUarte<'d>(
     embassy_nrf::buffered_uarte::BufferedUarte<
