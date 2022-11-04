@@ -61,7 +61,7 @@ async fn main(spawner: Spawner) {
     config.baudrate = uarte::Baudrate::BAUD115200;
 
 
-    let power_pins = ModemPowerPins {
+    let sim7600_power_pins = ModemPowerPins {
         status: Input::new(p.P1_12.degrade(), Pull::None),
         power_key: Output::new(p.P1_05.degrade(), Level::Low, OutputDrive::Standard),
         dtr: Output::new(p.P0_13.degrade(), Level::Low, OutputDrive::Standard),
@@ -84,16 +84,17 @@ async fn main(spawner: Spawner) {
     let mut modem = spawn_modem!(
         &spawner,
         UarteComponents as UarteComponents { uarte: p.UARTE0, timer: p.TIMER0, ppi_ch1: p.PPI_CH1, ppi_ch2: p.PPI_CH2, irq, rxd: p.P0_06.degrade(), txd: p.P0_08.degrade(), rts: p.P0_07.degrade(), cts: p.P1_10.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
-        power_pins
+        sim7600_power_pins
     );
     defmt::info!("T0");
-    defmt::info!("Initializing modem");
+    defmt::info!("Initializing 4G modem");
     modem.init().await.unwrap();
 
 
     defmt::info!("T1");
     defmt::info!("Activating modem");
     modem.activate().await.unwrap();
+
 
     //defmt::info!("T2");
     //defmt::info!("sleeping 1s");
