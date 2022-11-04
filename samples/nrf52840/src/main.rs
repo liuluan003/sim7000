@@ -61,16 +61,16 @@ type Modem = sim7000_async::modem::Modem<'static, ModemPowerPins>;
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
 
-
+    defmt::error!("log-level: error");
+    defmt::warn!("log-level: warn");
+    defmt::info!("log-level: info");
+    defmt::debug!("log-level: debug");
+    defmt::trace!("log-level: trace");
 
         //lc79d init
         let p_2 = embassy_nrf::init(Default::default());
 
-        defmt::error!("log-level: error");
-        defmt::warn!("log-level: warn");
-        defmt::info!("log-level: info");
-        defmt::debug!("log-level: debug");
-        defmt::trace!("log-level: trace");
+/*
     
         defmt::info!("Started"); 
 
@@ -113,30 +113,82 @@ async fn main(spawner: Spawner) {
         let mut lc79d_modem = spawn_modem!(
             &spawner,
             UarteComponents_2 as UarteComponents_2  { uarte: p_2.UARTE0, timer: p_2.TIMER0, ppi_ch1: p_2.PPI_CH1, ppi_ch2: p_2.PPI_CH2, irq_lc79d, rxd: p_2.P0_15.degrade(), txd: p_2.P0_14.degrade(), rts: p_2.P1_02.degrade(), cts: p_2.P0_16.degrade(), config_lc79d, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
-            lc79d_power_pins
+                  lc79d_power_pins
         );
 
         defmt::info!("T0");
         defmt::info!("Initializing 4G modem");
         lc79d_modem.init().await.unwrap();
 
-     /*    
+*/
+
+
+
+
+     
+  
+        //lc79d init with UARTE1
+        let p_2 = embassy_nrf::init(Default::default());
+
+        let mut irq_lc79d = interrupt::take!(UARTE1);
+        let mut config_lc79d = uarte::Config::default();
+        config_lc79d.parity = uarte::Parity::EXCLUDED;
+        config_lc79d.baudrate = uarte::Baudrate::BAUD115200;
+    
+    
+        let lc79d_power_pins = ModemPowerPins {
+            status: Input::new(p_2.P1_12.degrade(), Pull::None),
+            power_key: Output::new(p_2.P1_05.degrade(), Level::Low, OutputDrive::Standard),
+            dtr: Output::new(p_2.P0_13.degrade(), Level::Low, OutputDrive::Standard),
+            reset: Output::new(p_2.P1_04.degrade(), Level::Low, OutputDrive::Standard),
+            ri: Input::new(p_2.P1_07.degrade(), Pull::Up),
+        };
+        
+        let mut LC79_AP_REQ = Output::new(
+            p_2.P1_06.degrade(),
+            embassy_nrf::gpio::Level::High,
+            embassy_nrf::gpio::OutputDrive::Standard,
+        );
+
+        let mut LC79D_PEN = Output::new(
+            p_2.P0_12.degrade(),
+            embassy_nrf::gpio::Level::High,
+            embassy_nrf::gpio::OutputDrive::Standard,
+        );
+
+
+
+        // LC79_BOOT and LC79_STANDBY are controlled by the extender MCP23008-E_SS
+
+
+        LC79D_PEN.set_low();
+        Timer::after(Duration::from_millis(1500)).await;
+        LC79D_PEN.set_high();
+    
+    
+        let mut lc79d_modem = spawn_modem!(
+            &spawner,
+            UarteComponents_3 as UarteComponents_3  { uarte: p_2.UARTE1, timer: p_2.TIMER1, ppi_ch1: p_2.PPI_CH1, ppi_ch2: p_2.PPI_CH2, irq_lc79d, rxd: p_2.P0_15.degrade(), txd: p_2.P0_14.degrade(), rts: p_2.P1_02.degrade(), cts: p_2.P0_16.degrade(), config_lc79d, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
+                  lc79d_power_pins
+        );
+
+        defmt::info!("T0");
+        defmt::info!("Initializing 4G modem");
+        lc79d_modem.init().await.unwrap();
+   /* 
 */
 
     //sim7600 init
 
     let p1 = embassy_nrf::init(Default::default());
 
-    defmt::error!("log-level: error");
-    defmt::warn!("log-level: warn");
-    defmt::info!("log-level: info");
-    defmt::debug!("log-level: debug");
-    defmt::trace!("log-level: trace");
+
 
     defmt::info!("Started");
 
     /* */
     let mut irq = interrupt::take!(UARTE0_UART0);
+    //let irq = irq_lc79d;
     let mut config = uarte::Config::default();
     config.parity = uarte::Parity::EXCLUDED;
     config.baudrate = uarte::Baudrate::BAUD115200;
@@ -339,7 +391,7 @@ impl BuildIo for UarteComponents_2 {
 
 
 
-/*
+
 
 struct UarteComponents_3 {
     pub uarte: UARTE1,
@@ -388,7 +440,7 @@ impl BuildIo for UarteComponents_3 {
 }
 
 
-
+/*
 
 */
 
