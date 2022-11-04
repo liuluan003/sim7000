@@ -339,8 +339,7 @@ impl BuildIo for UarteComponents_2 {
 
 
 
-/* 
-
+/*
 
 struct UarteComponents_3 {
     pub uarte: UARTE1,
@@ -353,7 +352,7 @@ struct UarteComponents_3 {
     pub rts: AnyPin,
     pub cts: AnyPin,
     pub config_lc79d: uarte::Config,
-    pub state: State<'static, UARTE0, TIMER0>,
+    pub state: State<'static, UARTE1, TIMER1>,
     pub tx_buffer: [u8; 64],
     pub rx_buffer: [u8; 64],
 }
@@ -366,8 +365,8 @@ impl BuildIo for UarteComponents_3 {
     fn build<'d>(&'d mut self) -> Self::IO<'d> {
         let state = unsafe {
             core::mem::transmute::<
-                &'d mut State<'static, UARTE0, TIMER0>,
-                &'d mut State<'d, UARTE0, TIMER0>,
+                &'d mut State<'static, UARTE1, TIMER1>,
+                &'d mut State<'d, UARTE1, TIMER1>,
             >(&mut self.state)
         };
         AppUarte(BufferedUarte::new(
@@ -387,7 +386,6 @@ impl BuildIo for UarteComponents_3 {
         ))
     }
 }
-
 
 
 
