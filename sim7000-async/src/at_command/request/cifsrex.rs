@@ -9,6 +9,7 @@ pub struct GetLocalIpExt;
 impl ATRequest for GetLocalIpExt {
     type Response = (IpExt, GenericOk);
     fn encode(&self) -> String<256> {
-        "AT+CIFSREX\r".into()
+        //"AT+CIFSREX\r".into()
+        "AT+IPADDR\r".into()//niklas 2022
     }
 }

@@ -86,20 +86,20 @@ impl<'c, P: ModemPower> Modem<'c, P> {
 
     pub async fn init(&mut self) -> Result<(), Error> {
         self.deactivate().await;
-        defmt::info!("S0");
+        //defmt::info!("S0");
         let publisher = self.context.power_signal.publisher().unwrap();
         publisher.publish(true).await;
-        defmt::info!("S1");
+        //defmt::info!("S1");
         self.power.enable().await;
-        defmt::info!("S2");
+       // defmt::info!("S2");
 
         let commands = self.commands.lock().await;
-        defmt::info!("S3");
+        //defmt::info!("S3");
         let set_flow_control = SetFlowControl {
             dce_by_dte: FlowControl::Hardware,
             dte_by_dce: FlowControl::Hardware,
         };
-        defmt::info!("S4");
+        //defmt::info!("S4");
 
         // Turn on hardware flow control, the modem does not save this state on reboot.
         // We need to set it as fast as possible to avoid dropping bytes.
@@ -112,7 +112,7 @@ impl<'c, P: ModemPower> Modem<'c, P> {
                 break;
             }
         }
-        defmt::info!("S5");
+        //defmt::info!("S5");
         // Modem has been known to get stuck in an unresponsive state until we jiggle it by
         // enabling echo. This is fine.
         for _ in 0..5 {
@@ -125,38 +125,27 @@ impl<'c, P: ModemPower> Modem<'c, P> {
                 break;
             }
         }
-        defmt::info!("S6");
+        //defmt::info!("S6");
         commands.run(csclk::SetSlowClock(false)).await?;
-        defmt::info!("S7");
+        //defmt::info!("S7");
         commands.run(At).await?;
-        defmt::info!("S8");
+        //defmt::info!("S8");
+        Timer::after(Duration::from_millis(1300)).await;
         commands.run(GetSignalQuality).await?;
-        defmt::info!("S9");
+        //defmt::info!("S9");
         
         let (iccidvalue,ok)= commands.run(ShowIccid).await?;
-        defmt::info!("country code{} {} {}", iccidvalue.country,iccidvalue.issuer,iccidvalue.account);
-        defmt::info!("S10");
+        //defmt::info!("CCID{} {} {}", iccidvalue.country,iccidvalue.issuer,iccidvalue.account);
+        //defmt::info!("S10");
         commands.run(ipr::SetBaudRate(BaudRate::Hz115200)).await?;
-        defmt::info!("S11");
+        //defmt::info!("S11");
         /* 
         commands.run(set_flow_control).await?;
         commands
             .run(cmee::ConfigureCMEErrors(CMEErrorMode::Numeric))
             .await?;
         */
-        /* 
-        defmt::info!("S12");
-        commands.run(Cgdcount).await?;
-        defmt::info!("S13");
-        commands.run(Cipmode1).await?;
-        defmt::info!("S14");
-        commands.run(Csocksetpn1).await?;
-        defmt::info!("S15");
-        commands.run(Netopen).await?;
-        Timer::after(Duration::from_millis(1000)).await;
-        defmt::info!("S16");
-        commands.run(Cifsr).await?;
-        */
+
         /* 
         let configure_edrx = cedrxs::ConfigureEDRX {
             n: EDRXSetting::Enable,
@@ -200,7 +189,7 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             dce_by_dte: FlowControl::Hardware,
             dte_by_dce: FlowControl::Hardware,
         };
-        defmt::info!("A2");
+        //defmt::info!("A2");
 
         let commands = self.commands.lock().await;
 
@@ -219,23 +208,24 @@ impl<'c, P: ModemPower> Modem<'c, P> {
             .run(cgreg::ConfigureRegistrationUrc::EnableRegLocation)
             .await?;
         */ 
-            defmt::info!("S12");
+            //defmt::info!("S12");
             commands.run(Csocksetpn1).await?;
-            
-            defmt::info!("S13");
+            Timer::after(Duration::from_millis(1000)).await;
+            //defmt::info!("S13");
             commands.run(Cgdcount).await?;
             
             Timer::after(Duration::from_millis(1000)).await;
-            defmt::info!("S14");
+            //defmt::info!("S14");
             commands.run(Cipmode0).await?;
             Timer::after(Duration::from_millis(1000)).await;
-            defmt::info!("S15");
+            //defmt::info!("S15");
             commands.run(Netopen).await?;
             Timer::after(Duration::from_millis(1000)).await;
-            defmt::info!("S16");
-            commands.run(Cifsr).await?;
-            Timer::after(Duration::from_millis(100)).await;
             //defmt::info!("S16");
+            //commands.run(GetCifsrResult).await?;
+            commands.run(GetLocalIpExt).await?;
+            Timer::after(Duration::from_millis(100)).await;
+            //defmt::info!("S17");
             //commands.run(Connect_test).await?;
             //Timer::after(Duration::from_millis(500)).await;
 
@@ -253,6 +243,8 @@ impl<'c, P: ModemPower> Modem<'c, P> {
 
         */
        // self.authenticate(&commands).await?;
+
+
         Ok(())
     }
 
@@ -319,6 +311,7 @@ impl<'c, P: ModemPower> Modem<'c, P> {
                 ConnectionMessage::Connected => break,
                 ConnectionMessage::ConnectionFailed => panic!("connection failed"), //TODO
                 _ => {}
+              //niklas 2022
             }
         }
 
