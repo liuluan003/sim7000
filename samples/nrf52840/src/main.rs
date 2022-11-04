@@ -112,7 +112,7 @@ async fn main(spawner: Spawner) {
     
         let mut lc79d_modem = spawn_modem!(
             &spawner,
-            UarteComponents_2 as UarteComponents_2  { uarte: p_2.UARTE1, timer: p_2.TIMER1, ppi_ch3: p_2.PPI_CH3, ppi_ch4: p_2.PPI_CH4, irq, rxd: p_2.P0_06.degrade(), txd: p_2.P0_08.degrade(), rts: p_2.P0_07.degrade(), cts: p_2.P1_10.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
+            UarteComponents_2 as UarteComponents_2  { uarte: p_2.UARTE1, timer: p_2.TIMER1, ppi_ch3: p_2.PPI_CH3, ppi_ch4: p_2.PPI_CH4, irq, rxd: p_2.P0_15.degrade(), txd: p_2.P0_14.degrade(), rts: p_2.P1_12.degrade(), cts: p_2.P0_16.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
             lc79d_power_pins
         );
 
