@@ -123,9 +123,17 @@ async fn main(spawner: Spawner) {
 
 */
 
+/* 
 
 
-
+let mut lc79d_modem = spawn_modem!(
+    &spawner,
+    UarteComponents_3 as UarteComponents_3  { uarte: p_2.UARTE1, timer: p_2.TIMER1, ppi_ch1: p_2.PPI_CH3, ppi_ch2: p_2.PPI_CH4, irq_lc79d, 
+        
+        rxd: p_2.P0_15.degrade(), txd: p_2.P0_14.degrade(), rts: p_2.P1_02.degrade(), cts: p_2.P0_16.degrade(), 
+        config_lc79d, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
+          lc79d_power_pins
+);
      
   
         //lc79d init with UARTE1
@@ -176,7 +184,7 @@ async fn main(spawner: Spawner) {
         defmt::info!("T0");
         defmt::info!("Initializing 4G modem");
         lc79d_modem.init().await.unwrap();
-/* 
+
 */
 
     //sim7600 init
@@ -184,6 +192,7 @@ async fn main(spawner: Spawner) {
     let p1 = embassy_nrf::init(Default::default());
 
 
+    
 
     defmt::info!("Started");
 
@@ -210,6 +219,26 @@ async fn main(spawner: Spawner) {
         embassy_nrf::gpio::OutputDrive::Standard,
     );
     
+
+
+
+    let mut uart_lc79d= BufferedUarte::new(
+        state,
+        &mut self.uarte,
+        &mut self.timer,
+        &mut self.ppi_ch3,
+        &mut self.ppi_ch4,
+        &mut self.irq,
+        &mut self.p1.P0_15,
+        &mut self. p1.P0_14,
+        &mut self.p1.P0_16,
+        &mut self.p1.P1_02,
+        self.config.clone(),
+        &mut self.rx_buffer,
+        &mut self.tx_buffer,
+    );
+
+
     
     SIM7600_PEN.set_low();
     Timer::after(Duration::from_millis(1500)).await;
@@ -343,7 +372,7 @@ impl BuildIo for UarteComponents_1 {
     }
 }
 
-
+/* 
 struct UarteComponents_2 {
     pub uarte: UARTE0,
     pub timer: TIMER0,
@@ -392,8 +421,6 @@ impl BuildIo for UarteComponents_2 {
 
 
 
-
-
 struct UarteComponents_3 {
     pub uarte: UARTE1,
     pub timer: TIMER1,
@@ -426,8 +453,8 @@ impl BuildIo for UarteComponents_3 {
             state,
             &mut self.uarte,
             &mut self.timer,
-            &mut self.ppi_ch1,
-            &mut self.ppi_ch2,
+            &mut self.ppi_ch3,
+            &mut self.ppi_ch4,
             &mut self.irq_lc79d,
             &mut self.rxd,
             &mut self.txd,
@@ -439,7 +466,7 @@ impl BuildIo for UarteComponents_3 {
         ))
     }
 }
-
+*/
 
 /*
 
