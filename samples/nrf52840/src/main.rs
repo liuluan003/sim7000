@@ -128,7 +128,7 @@ async fn main(spawner: Spawner) {
     defmt::info!("Enable LC79D channel");
 
     
-    
+     
 
 /* 
     let mut readbuf = [0u8,1]; 
@@ -140,20 +140,29 @@ async fn main(spawner: Spawner) {
 
 */
 
-
-    let mut readbuf = [0u8,1024]; 
+    let mut i:u16=0;
+    let mut readmiddlebuf = [0u8;1];
+    let mut readbuf = [0u8;1024];
     loop {
-        let mut read= uart1.blocking_read(&mut readbuf).unwrap();
-        let strreadbuf:&str = core::str::from_utf8(&readbuf[i]).unwrap();
-        i++;
+        //let mut read= uart1.blocking_read(&mut readbuf[i]).unwrap();
+        //let strreadbuf:&str = core::str::from_utf8(&readbuf[i]).unwrap();
 
-        //defmt::info!("{}",read);
-        if(readbuf[i]="\n")
+
+
+        let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+        let strreadbuf:&str = core::str::from_utf8(&readmiddlebuf).unwrap();
+        defmt::info!("Read{}",&strreadbuf);
+
+        /* 
+        if(readbuf[i]=="\n")
         {
+            let strreadbuf:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
             defmt::info!("Read{}",&strreadbuf);
+            i=0;
         }
-        
-        defmt::info!("{}",&readbuf);
+        i += 1;
+*/
+     
     }
 
 
