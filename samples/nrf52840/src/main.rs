@@ -36,16 +36,36 @@ use embassy_nrf::{
 };
 
 
+struct UarteComponents {
+    pub uarte: UARTE1,
+    pub timer: TIMER1,
+    pub ppi_ch1: PPI_CH1,
+    pub ppi_ch2: PPI_CH2,
+    pub irq: UARTE0_UART0,
+    pub rxd: AnyPin,
+    pub txd: AnyPin,
+    pub rts: AnyPin,
+    pub cts: AnyPin,
+    pub config: uarte::Config,
+    pub state: State<'static, UARTE0, TIMER0>,
+    pub tx_buffer: [u8; 256],
+    pub rx_buffer: [u8; 256],
+}
 
-/* 
-use embassy_nrf::{
-    buffered_uarte::{BufferedUarte, BufferedUarteRx, BufferedUarteTx, State},
-    gpio::{AnyPin, Input, Level, Output, OutputDrive, Pin, Pull},
-    interrupt::{self, UARTE1_UART1},
-    peripherals::{PPI_CH3, PPI_CH4, TIMER1, UARTE1},
-    uarte,
-};
-*/
+
+struct PinOut {
+    lc79_pen: AnyPin,
+    lc79_rx: AnyPin,
+    lc79_tx: AnyPin,
+    lc79_rts: AnyPin,
+    lc79_cts: AnyPin,
+    lc79_ap_req: AnyPin,
+
+}
+
+
+
+
 
 use embassy_time::{with_timeout, Duration, Timer};
 use sim7000_async::{spawn_modem, BuildIo, ModemPower, PowerState, SplitIo};
@@ -61,142 +81,92 @@ type Modem = sim7000_async::modem::Modem<'static, ModemPowerPins>;
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
 
+
+
+
+
+    //sim7600 init
+    let p1 = embassy_nrf::init(Default::default());
     defmt::error!("log-level: error");
     defmt::warn!("log-level: warn");
     defmt::info!("log-level: info");
     defmt::debug!("log-level: debug");
     defmt::trace!("log-level: trace");
-        
-        /*
-        //lc79d init
-        let p_2 = embassy_nrf::init(Default::default());
+    let irquart1 = interrupt::take!(UARTE1);
+    let mut uart1_conf = uarte::Config::default();
+    uart1_conf.baudrate = embassy_nrf::uarte::Baudrate::BAUD115200;
+    uart1_conf.parity = embassy_nrf::uarte::Parity::EXCLUDED;
+    let vcu_pinout = PinOut {
+        lc79_pen: p1.P0_12.degrade(),
+        lc79_rx: p1.P0_15.degrade(),
+        lc79_tx: p1.P0_14.degrade(),
+        lc79_cts: p1.P0_16.degrade(),
+        lc79_rts: p1.P1_02.degrade(),
+        lc79_ap_req: p1.P1_06.degrade(),
+    };
 
+    let mut uart1 = embassy_nrf::uarte::Uarte::new_with_rtscts(
+        p1.UARTE1,
+        irquart1,
+        vcu_pinout.lc79_rx,
+        vcu_pinout.lc79_tx,
+        vcu_pinout.lc79_cts,
+        vcu_pinout.lc79_rts,
+        uart1_conf,
+    );
+
+    let mut lc79_pen = Output::new(
+        vcu_pinout.lc79_pen,
+        embassy_nrf::gpio::Level::High,
+        embassy_nrf::gpio::OutputDrive::Standard,
+    );
+
+    // LC79_BOOT and LC79_STANDBY are controlled by the extender MCP23008-E_SS
+    lc79_pen.set_low();
+    Timer::after(Duration::from_millis(1500)).await;
+    lc79_pen.set_high();
+    defmt::info!("Enable LC79D channel");
 
     
-        defmt::info!("Started"); 
-
-        let mut irq_lc79d = interrupt::take!(UARTE0_UART0);
-        let mut config_lc79d = uarte::Config::default();
-        config_lc79d.parity = uarte::Parity::EXCLUDED;
-        config_lc79d.baudrate = uarte::Baudrate::BAUD115200;
     
-    
-        let lc79d_power_pins = ModemPowerPins {
-            status: Input::new(p_2.P1_12.degrade(), Pull::None),
-            power_key: Output::new(p_2.P1_05.degrade(), Level::Low, OutputDrive::Standard),
-            dtr: Output::new(p_2.P0_13.degrade(), Level::Low, OutputDrive::Standard),
-            reset: Output::new(p_2.P1_04.degrade(), Level::Low, OutputDrive::Standard),
-            ri: Input::new(p_2.P1_07.degrade(), Pull::Up),
-        };
-        
-        let mut LC79_AP_REQ = Output::new(
-            p_2.P1_06.degrade(),
-            embassy_nrf::gpio::Level::High,
-            embassy_nrf::gpio::OutputDrive::Standard,
-        );
-
-        let mut LC79D_PEN = Output::new(
-            p_2.P0_12.degrade(),
-            embassy_nrf::gpio::Level::High,
-            embassy_nrf::gpio::OutputDrive::Standard,
-        );
-
-
-
-        // LC79_BOOT and LC79_STANDBY are controlled by the extender MCP23008-E_SS
-
-
-        LC79D_PEN.set_low();
-        Timer::after(Duration::from_millis(1500)).await;
-        LC79D_PEN.set_high();
-    
-    
-        let mut lc79d_modem = spawn_modem!(
-            &spawner,
-            UarteComponents_2 as UarteComponents_2  { uarte: p_2.UARTE0, timer: p_2.TIMER0, ppi_ch1: p_2.PPI_CH1, ppi_ch2: p_2.PPI_CH2, irq_lc79d, rxd: p_2.P0_15.degrade(), txd: p_2.P0_14.degrade(), rts: p_2.P1_02.degrade(), cts: p_2.P0_16.degrade(), config_lc79d, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
-                  lc79d_power_pins
-        );
-
-        defmt::info!("T0");
-        defmt::info!("Initializing 4G modem");
-        lc79d_modem.init().await.unwrap();
-
-*/
 
 /* 
-
-
-let mut lc79d_modem = spawn_modem!(
-    &spawner,
-    UarteComponents_3 as UarteComponents_3  { uarte: p_2.UARTE1, timer: p_2.TIMER1, ppi_ch1: p_2.PPI_CH3, ppi_ch2: p_2.PPI_CH4, irq_lc79d, 
-        
-        rxd: p_2.P0_15.degrade(), txd: p_2.P0_14.degrade(), rts: p_2.P1_02.degrade(), cts: p_2.P0_16.degrade(), 
-        config_lc79d, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
-          lc79d_power_pins
-);
-     
-  
-        //lc79d init with UARTE1
-        let p_2 = embassy_nrf::init(Default::default());
-
-        let mut irq_lc79d = interrupt::take!(UARTE1);
-        let mut config_lc79d = uarte::Config::default();
-        config_lc79d.parity = uarte::Parity::EXCLUDED;
-        config_lc79d.baudrate = uarte::Baudrate::BAUD115200;
-    
-    
-        let lc79d_power_pins = ModemPowerPins {
-            status: Input::new(p_2.P1_12.degrade(), Pull::None),
-            power_key: Output::new(p_2.P1_05.degrade(), Level::Low, OutputDrive::Standard),
-            dtr: Output::new(p_2.P0_13.degrade(), Level::Low, OutputDrive::Standard),
-            reset: Output::new(p_2.P1_04.degrade(), Level::Low, OutputDrive::Standard),
-            ri: Input::new(p_2.P1_07.degrade(), Pull::Up),
-        };
-        
-        let mut LC79_AP_REQ = Output::new(
-            p_2.P1_06.degrade(),
-            embassy_nrf::gpio::Level::High,
-            embassy_nrf::gpio::OutputDrive::Standard,
-        );
-
-        let mut LC79D_PEN = Output::new(
-            p_2.P0_12.degrade(),
-            embassy_nrf::gpio::Level::High,
-            embassy_nrf::gpio::OutputDrive::Standard,
-        );
-
-
-
-        // LC79_BOOT and LC79_STANDBY are controlled by the extender MCP23008-E_SS
-
-
-        LC79D_PEN.set_low();
-        Timer::after(Duration::from_millis(1500)).await;
-        LC79D_PEN.set_high();
-    
-    
-        let mut lc79d_modem = spawn_modem!(
-            &spawner,
-            UarteComponents_3 as UarteComponents_3  { uarte: p_2.UARTE1, timer: p_2.TIMER1, ppi_ch1: p_2.PPI_CH3, ppi_ch2: p_2.PPI_CH4, irq_lc79d, rxd: p_2.P0_15.degrade(), txd: p_2.P0_14.degrade(), rts: p_2.P1_02.degrade(), cts: p_2.P0_16.degrade(), config_lc79d, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
-                  lc79d_power_pins
-        );
-
-        defmt::info!("T0");
-        defmt::info!("Initializing 4G modem");
-        lc79d_modem.init().await.unwrap();
+    let mut readbuf = [0u8,1]; 
+    loop {
+        let mut read= uart1.blocking_read(&mut readbuf).unwrap();
+        let strreadbuf:&str = core::str::from_utf8(&readbuf).unwrap();
+        defmt::info!("Read{}",&strreadbuf);
+    }
 
 */
 
-    //sim7600 init
 
-    let p1 = embassy_nrf::init(Default::default());
+    let mut readbuf = [0u8,1024]; 
+    loop {
+        let mut read= uart1.blocking_read(&mut readbuf).unwrap();
+        let strreadbuf:&str = core::str::from_utf8(&readbuf[i]).unwrap();
+        i++;
+
+        //defmt::info!("{}",read);
+        if(readbuf[i]="\n")
+        {
+            defmt::info!("Read{}",&strreadbuf);
+        }
+        
+        defmt::info!("{}",&readbuf);
+    }
+
+
+
+
+
+
 
 
     
 
-    defmt::info!("Started");
 
-    /* */
+    
     let mut irq = interrupt::take!(UARTE0_UART0);
     //let irq = irq_lc79d;
     let mut config = uarte::Config::default();
@@ -221,7 +191,7 @@ let mut lc79d_modem = spawn_modem!(
     
 
 
-
+    /*  
     let mut uart_lc79d= BufferedUarte::new(
         state,
         &mut self.uarte,
@@ -237,13 +207,37 @@ let mut lc79d_modem = spawn_modem!(
         &mut self.rx_buffer,
         &mut self.tx_buffer,
     );
+*/
+  /*
+    let mut irq_lc79d = interrupt::take!(UARTE1);
+
+    let mut uarte= Uarte::new_with_rtscts(
+
+        p1.UARTE0,
+        p1.TIMER0,
+        p1.PPI_CH0,
+        p1.PPI_CH1,
+        irq_lc79d,
+        p1.P0_20,
+        p1.P0_24,
+        p1.P0_08,
+        p1.P0_11,
+        config,
+    );
+*/
+
+
+
+
 
 
     
+
+
     SIM7600_PEN.set_low();
     Timer::after(Duration::from_millis(1500)).await;
     SIM7600_PEN.set_high();
-
+    defmt::info!("Enable SIM7600 channel");
 
     let mut modem = spawn_modem!(
         &spawner,
@@ -286,6 +280,8 @@ let mut lc79d_modem = spawn_modem!(
     //defmt::info!("Signal quality: {:?}", modem.query_signal().await);
     //defmt::info!("System info: {:?}", modem.query_system_info().await);
    // defmt::info!("T4");
+
+
     for _ in 0..100 {
         defmt::info!("Z1");
         defmt::info!("sleeping 1s");
