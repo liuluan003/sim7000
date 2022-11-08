@@ -1,7 +1,8 @@
 #![no_std]
 #![no_main]
 #![feature(type_alias_impl_trait)]
-
+#![feature(type_name_of_val)]
+use core::any::type_name_of_val;
 extern crate jlink_rtt;
 // src/main.rs or src/bin/my-app.rs
 use defmt_rtt as _;
@@ -12,14 +13,13 @@ use rtt_target::{rtt_init_print, rprintln};
 use defmt_rtt as _;
 use embedded_io::asynch::Write; // linker shenanigans
 use embedded_io::asynch::Read; 
+use heapless::Vec;
 
 
 
-
-
-
-
-
+//extern crate std; 
+//use std;
+//use std::mem; 
 
 mod example;
 
@@ -67,6 +67,7 @@ struct PinOut {
 
 
 
+
 use embassy_time::{with_timeout, Duration, Timer};
 use sim7000_async::{spawn_modem, BuildIo, ModemPower, PowerState, SplitIo};
 
@@ -77,6 +78,19 @@ use defmt_rtt as _; // linker shenanigans
 extern crate panic_probe;
 
 type Modem = sim7000_async::modem::Modem<'static, ModemPowerPins>;
+
+/* 
+use std::ascii::escape_default;
+use std::str;
+
+fn show(bs: &[u8]) -> String {
+    let mut visible = String::new();
+    for &b in bs {
+        let part: Vec<u8> = escape_default(b).collect();
+        visible.push_str(str::from_utf8(&part).unwrap());
+    }
+    visible
+}*/
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
@@ -124,7 +138,7 @@ async fn main(spawner: Spawner) {
     // LC79_BOOT and LC79_STANDBY are controlled by the extender MCP23008-E_SS
     lc79_pen.set_low();
     Timer::after(Duration::from_millis(1500)).await;
-    lc79_pen.set_high();
+    lc79_pen.set_high(); 
     defmt::info!("Enable LC79D channel");
 
     
@@ -140,9 +154,11 @@ async fn main(spawner: Spawner) {
 
 */
 
-    let mut i:u16=0;
+    let mut i:u8=0;
     let mut readmiddlebuf = [0u8;1];
-    let mut readbuf = [0u8;1024];
+    //let mut readbuf = [0u8;256];
+    let mut readbuf: [u8;250] = [0; 250];
+    let vec_new: Vec<char,250>;
     loop {
         //let mut read= uart1.blocking_read(&mut readbuf[i]).unwrap();
         //let strreadbuf:&str = core::str::from_utf8(&readbuf[i]).unwrap();
@@ -150,18 +166,30 @@ async fn main(spawner: Spawner) {
 
 
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
-        let strreadbuf:&str = core::str::from_utf8(&readmiddlebuf).unwrap();
-        defmt::info!("Read{}",&strreadbuf);
+        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); //:&str
+        let char_vec: Vec<char,1> = strreadbuf.chars().collect();
+       //defmt::info!("{}",&strreadbuf);
+        defmt::info!("{}",char_vec[0]);
+        defmt::info!("{}",type_name_of_val(&char_vec[0]));
 
-        /* 
-        if(readbuf[i]=="\n")
+
+       
+        if((strreadbuf!="\n")&&(i<250))
         {
-            let strreadbuf:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read{}",&strreadbuf);
-            i=0;
+           // use std::mem; 
+           //vec_new[i]=char_vec[0];
+           let got = std::mem::replace(&vec_new[i], char_vec[0]);
+           //defmt::info!("{}",vec_new[i]);
+            i += 1;
         }
-        i += 1;
-*/
+        else{
+           // let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+            //defmt::info!("Read{}",&strreadbuf_line);
+            defmt::info!("got line");
+            i = 0;
+        }
+ 
+
      
     }
 
