@@ -2,6 +2,9 @@
 #![no_main]
 #![feature(type_alias_impl_trait)]
 #![feature(type_name_of_val)]
+#![feature(mem_copy_fn)]
+use core::mem::copy;
+
 use core::any::type_name_of_val;
 extern crate jlink_rtt;
 // src/main.rs or src/bin/my-app.rs
@@ -15,8 +18,10 @@ use embedded_io::asynch::Write; // linker shenanigans
 use embedded_io::asynch::Read; 
 use heapless::Vec;
 
+//use char::to_string;
+use core::str;
 
-
+//use std::mem;
 //extern crate std; 
 //use std;
 //use std::mem; 
@@ -157,8 +162,7 @@ async fn main(spawner: Spawner) {
     let mut i:u8=0;
     let mut readmiddlebuf = [0u8;1];
     //let mut readbuf = [0u8;256];
-    let mut readbuf: [u8;250] = [0; 250];
-    let vec_new: Vec<char,250>;
+    let mut readbuf: [char;250];
     loop {
         //let mut read= uart1.blocking_read(&mut readbuf[i]).unwrap();
         //let strreadbuf:&str = core::str::from_utf8(&readbuf[i]).unwrap();
@@ -167,18 +171,28 @@ async fn main(spawner: Spawner) {
 
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); //:&str
-        let char_vec: Vec<char,1> = strreadbuf.chars().collect();
-       //defmt::info!("{}",&strreadbuf);
-        defmt::info!("{}",char_vec[0]);
-        defmt::info!("{}",type_name_of_val(&char_vec[0]));
+        //let char_vec: Vec<char,1> = strreadbuf.chars().collect();
+        defmt::info!("{}",&strreadbuf);
+        defmt::info!("{}",readmiddlebuf[0]);
+        //defmt::info!("{}",encode_utf8(readmiddlebuf[0]));
+        //readbuf[0]= core::mem::take(&mut strreadbuf[0]);
+        //readbuf[0]= char(strreadbuf[0]);
+       // defmt::info!("{}",&strreadbuf);
 
+        //defmt::info!("{}",strreadbuf);
+        //defmt::info!("{}",type_name_of_val(&char_vec[0]));
+
+
+ 
 
        
         if((strreadbuf!="\n")&&(i<250))
         {
            // use std::mem; 
            //vec_new[i]=char_vec[0];
-           let got = std::mem::replace(&vec_new[i], char_vec[0]);
+           //let got = core::mem::replace(&vec_new[i], char_vec[0]);
+           //vec_new[0]= mem::take(&mut v2[0]);
+           
            //defmt::info!("{}",vec_new[i]);
             i += 1;
         }
