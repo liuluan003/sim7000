@@ -172,7 +172,7 @@ async fn main(spawner: Spawner) {
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
             defmt::info!("Read{}",&strreadbuf_line);
-            defmt::info!("got line");
+            //defmt::info!("got line");
             i = 0;
         }
  
