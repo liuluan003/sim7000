@@ -149,56 +149,29 @@ async fn main(spawner: Spawner) {
     
      
 
-/* 
-    let mut readbuf = [0u8,1]; 
-    loop {
-        let mut read= uart1.blocking_read(&mut readbuf).unwrap();
-        let strreadbuf:&str = core::str::from_utf8(&readbuf).unwrap();
-        defmt::info!("Read{}",&strreadbuf);
-    }
 
-*/
 
-    let mut i:u8=0;
+    let mut i:usize=0;
     let mut readmiddlebuf = [0u8;1];
-    //let mut readbuf = [0u8;256];
-    let mut readbuf: [char;250];
+    let mut readbuf: [u8;250]= [0u8;250];
     loop {
-        //let mut read= uart1.blocking_read(&mut readbuf[i]).unwrap();
-        //let strreadbuf:&str = core::str::from_utf8(&readbuf[i]).unwrap();
 
 
 
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); //:&str
-        //let char_vec: Vec<char,1> = strreadbuf.chars().collect();
-        defmt::info!("{}",&strreadbuf);
-        defmt::info!("{}",readmiddlebuf[0]);
-        //defmt::info!("{}",encode_utf8(readmiddlebuf[0]));
-        //readbuf[0]= core::mem::take(&mut strreadbuf[0]);
-        //readbuf[0]= char(strreadbuf[0]);
-       // defmt::info!("{}",&strreadbuf);
-
-        //defmt::info!("{}",strreadbuf);
-        //defmt::info!("{}",type_name_of_val(&char_vec[0]));
-
-
- 
-
+        //defmt::info!("{}",&strreadbuf);
+        //defmt::info!("{}",readmiddlebuf[0]);
        
         if((strreadbuf!="\n")&&(i<250))
         {
-           // use std::mem; 
-           //vec_new[i]=char_vec[0];
-           //let got = core::mem::replace(&vec_new[i], char_vec[0]);
-           //vec_new[0]= mem::take(&mut v2[0]);
-           
-           //defmt::info!("{}",vec_new[i]);
+            readbuf[i]=readmiddlebuf[0];
+            //defmt::info!("{}",readbuf[i]);
             i += 1;
         }
         else{
-           // let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            //defmt::info!("Read{}",&strreadbuf_line);
+            let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+            defmt::info!("Read{}",&strreadbuf_line);
             defmt::info!("got line");
             i = 0;
         }
