@@ -265,7 +265,7 @@ async fn main(spawner: Spawner) {
 
     let mut modem = spawn_modem!(
         &spawner,
-        UarteComponents_1 as UarteComponents_1 { uarte: p1.UARTE0, timer: p1.TIMER0, ppi_ch1: p1.PPI_CH1, ppi_ch2: p1.PPI_CH2, irq, rxd: p1.P0_06.degrade(), txd: p1.P0_08.degrade(), rts: p1.P0_07.degrade(), cts: p1.P1_10.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
+        UarteComponents_1 as UarteComponents_1 { uarte: p1.UARTE0, timer: p1.TIMER0, ppi_ch1: p1.PPI_CH1, ppi_ch2: p1.PPI_CH2, irq, rxd: p1.P0_06.degrade(), txd: p1.P0_08.degrade(), rts: p1.P1_10.degrade(), cts: p1.P0_07.degrade(), config, state: State::new(), tx_buffer: [0; 64], rx_buffer: [0; 64] },
         sim7600_power_pins
     );
     defmt::info!("T0");
