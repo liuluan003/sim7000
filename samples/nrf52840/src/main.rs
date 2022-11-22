@@ -155,11 +155,29 @@ async fn main(spawner: Spawner) {
     let mut readmiddlebuf = [0u8;1];
     let mut readbuf: [u8;250]= [0u8;250];
 
+    let mut counter = 0;
+    while counter<50 {
+        let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+        if((strreadbuf!="\n")&&(i<250))
+        {
+            readbuf[i]=readmiddlebuf[0];
+            i += 1;
+            counter +=1;
+        }
+        else{
+            let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+            defmt::info!("Read{}",&strreadbuf_line);
+            i = 0;
+        }     
+        
+    }
+
 
 
 
     
-
+    defmt::info!("                                   disable the sleeping mode");
     let mut commandString  = "$PQSETSLEEP,0*10\r\n";  //disable the sleeping mode
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -176,6 +194,7 @@ async fn main(spawner: Spawner) {
 
 
     
+    defmt::info!("                                   disable the low power mode");
     let mut commandString  = "$PQSETGLP,0*04\r\n";  //disable the low power mode to increase the accuracy
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -191,7 +210,7 @@ async fn main(spawner: Spawner) {
     }     
 
 
-        
+    defmt::info!("                                   get constellation mask");    
     let mut commandString  = "$PQGETCNST*5D\r\n";  //Gets the information of GNSS constellation mask.
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -205,7 +224,7 @@ async fn main(spawner: Spawner) {
         defmt::info!("Read{}",&strreadbuf_line);
         i = 0;
     }     
-
+    defmt::info!("                                   set constellation mask");    
     let mut commandString  = "$PQSETCNST,1F*12\r\n";  //Gets the information of GNSS constellation mask.
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
