@@ -155,9 +155,10 @@ async fn main(spawner: Spawner) {
     let mut readmiddlebuf = [0u8;1];
     let mut readbuf: [u8;250]= [0u8;250];
 
+    let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+    let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     let mut counter = 0;
-
-    while counter<10 {
+    while counter<30 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
         if((strreadbuf!="\n")&&(i<250))
@@ -174,7 +175,6 @@ async fn main(spawner: Spawner) {
         }     
         
     }
-
 
     defmt::info!("$PQCFGNMEAMSG                                   Sets all the type of output NMEA messages off.");
     let mut commandString  = "$PQCFGNMEAMSG,1,0,0,0,0,0,0*00\r\n";  //disable the sleeping mode
