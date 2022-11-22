@@ -154,14 +154,69 @@ async fn main(spawner: Spawner) {
     let mut i:usize=0;
     let mut readmiddlebuf = [0u8;1];
     let mut readbuf: [u8;250]= [0u8;250];
+
+
+
+
+    
+
+    let mut commandString  = "$PQSETSLEEP,0*10\r\n";  //disable the sleeping mode
+    let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+    let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+    if((strreadbuf!="\n")&&(i<250))
+    {
+        readbuf[i]=readmiddlebuf[0];
+        i += 1;
+    }
+    else{
+        let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+        defmt::info!("Read{}",&strreadbuf_line);
+        i = 0;
+    }     
+
+
+    
+    let mut commandString  = "$PQSETGLP,0*04\r\n";  //disable the low power mode to increase the accuracy
+    let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+    let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+    if((strreadbuf!="\n")&&(i<250))
+    {
+        readbuf[i]=readmiddlebuf[0];
+        i += 1;
+    }
+    else{
+        let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+        defmt::info!("Read{}",&strreadbuf_line);
+        i = 0;
+    }     
+
+
+
+
+
+    let mut commandString  = "$PQCFGEAMASK,1,50*67\r\n";  //Sets estimate accuracy
+    let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+    let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+    if((strreadbuf!="\n")&&(i<250))
+    {
+        readbuf[i]=readmiddlebuf[0];
+        i += 1;
+    }
+    else{
+        let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+        defmt::info!("Read{}",&strreadbuf_line);
+        i = 0;
+    }     
+
+
+
+
+
+
+
     loop {
-
-
-
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
-        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); //:&str
-
-       
+        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
         if((strreadbuf!="\n")&&(i<250))
         {
             readbuf[i]=readmiddlebuf[0];
@@ -170,12 +225,8 @@ async fn main(spawner: Spawner) {
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
             defmt::info!("Read{}",&strreadbuf_line);
-    
             i = 0;
-        }
- 
-
-     
+        }     
     }
 
 
@@ -190,7 +241,6 @@ async fn main(spawner: Spawner) {
 
     
     let mut irq = interrupt::take!(UARTE0_UART0);
-    //let irq = irq_lc79d;
     let mut config = uarte::Config::default();
     config.parity = uarte::Parity::EXCLUDED;
     config.baudrate = uarte::Baudrate::BAUD115200;
