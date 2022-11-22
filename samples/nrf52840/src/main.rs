@@ -178,9 +178,11 @@ async fn main(spawner: Spawner) {
 
     defmt::info!("$PQCFGNMEAMSG                                   Sets all the type of output NMEA messages off.");
     let mut commandString  = "$PQCFGNMEAMSG,1,0,0,0,0,0,0*00\r\n";  //disable the sleeping mode
+
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     let mut counter = 0;
+    uarte.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -207,6 +209,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
+    uarte.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -231,6 +234,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
+    uarte.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -254,6 +258,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
+    uarte.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -279,6 +284,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
+    uarte.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -300,21 +306,29 @@ async fn main(spawner: Spawner) {
 
 
 
-
+    defmt::info!("$PQCFGEAMASK                                   Sets estimate accuracy");    
     let mut commandString  = "$PQCFGEAMASK,1,50*67\r\n";  //Sets estimate accuracy
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
-    if((strreadbuf!="\n")&&(i<250))
-    {
-        readbuf[i]=readmiddlebuf[0];
-        i += 1;
+    counter=0;
+    uarte.write(commandString.as_bytes()).await; 
+    while counter<1 {
+        let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+        if((strreadbuf!="\n")&&(i<250))
+        {
+            readbuf[i]=readmiddlebuf[0];
+            i += 1;
+            
+        }
+        else{
+            let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+            defmt::info!("Read{}",&strreadbuf_line);
+            i = 0;
+            counter +=1;
+        }     
+        
     }
-    else{
-        let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-        defmt::info!("Read{}",&strreadbuf_line);
-        i = 0;
-    }     
-
 
 
 
