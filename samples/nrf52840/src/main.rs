@@ -172,8 +172,7 @@ async fn main(spawner: Spawner) {
             defmt::info!("Read{}",&strreadbuf_line);
             i = 0;
             counter +=1;
-        }     
-        
+        }  
     }
 
     defmt::info!("$PQCFGNMEAMSG                                   Sets all the type of output NMEA messages off.");
@@ -181,9 +180,9 @@ async fn main(spawner: Spawner) {
 
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
-    let mut counter = 0;
+    let mut counter:u32 = 0;
     uart1.write(commandString.as_bytes()).await; 
-    while counter<1 {
+    while counter<380 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
         if((strreadbuf!="\n")&&(i<250))
@@ -194,12 +193,16 @@ async fn main(spawner: Spawner) {
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read{}",&strreadbuf_line);
+            defmt::info!("Read{}  counter:{}",&strreadbuf_line,counter);
             i = 0;
-            counter +=1;
-        }     
+            
+        }      
+        counter +=1;
         
+        //if counter%80==0   {defmt::info!("counter:{}",counter);}
+
     }
+
 
 
 
@@ -221,7 +224,7 @@ async fn main(spawner: Spawner) {
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read{}",&strreadbuf_line);
+            defmt::info!("Read {}",&strreadbuf_line);
             i = 0;
             counter +=1;
         }     
@@ -246,7 +249,7 @@ async fn main(spawner: Spawner) {
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read{}",&strreadbuf_line);
+            defmt::info!("Read {}",&strreadbuf_line);
             i = 0;
             counter +=1;
         }     
@@ -270,7 +273,7 @@ async fn main(spawner: Spawner) {
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read{}",&strreadbuf_line);
+            defmt::info!("Read {}",&strreadbuf_line);
             i = 0;
             counter +=1;
         }     
@@ -296,7 +299,7 @@ async fn main(spawner: Spawner) {
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read{}",&strreadbuf_line);
+            defmt::info!("Read {}",&strreadbuf_line);
             i = 0;
             counter +=1;
         }     
@@ -323,7 +326,7 @@ async fn main(spawner: Spawner) {
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read{}",&strreadbuf_line);
+            defmt::info!("Read {}",&strreadbuf_line);
             i = 0;
             counter +=1;
         }     
@@ -345,7 +348,7 @@ async fn main(spawner: Spawner) {
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read{}",&strreadbuf_line);
+            defmt::info!("Read {}",&strreadbuf_line);
             i = 0;
         }     
     }
