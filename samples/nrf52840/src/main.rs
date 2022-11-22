@@ -191,6 +191,37 @@ async fn main(spawner: Spawner) {
     }     
 
 
+        
+    let mut commandString  = "$PQGETCNST*5D\r\n";  //Gets the information of GNSS constellation mask.
+    let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+    let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+    if((strreadbuf!="\n")&&(i<250))
+    {
+        readbuf[i]=readmiddlebuf[0];
+        i += 1;
+    }
+    else{
+        let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+        defmt::info!("Read{}",&strreadbuf_line);
+        i = 0;
+    }     
+
+    let mut commandString  = "$PQSETCNST*5D\r\n";  //Gets the information of GNSS constellation mask.
+    let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+    let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+    if((strreadbuf!="\n")&&(i<250))
+    {
+        readbuf[i]=readmiddlebuf[0];
+        i += 1;
+    }
+    else{
+        let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+        defmt::info!("Read{}",&strreadbuf_line);
+        i = 0;
+    }     
+
+
+
 
 
 
