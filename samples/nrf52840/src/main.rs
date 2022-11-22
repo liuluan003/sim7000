@@ -182,7 +182,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     let mut counter = 0;
-    uarte.write(commandString.as_bytes()).await; 
+    uart1.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -209,7 +209,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
-    uarte.write(commandString.as_bytes()).await; 
+    uart1.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -234,7 +234,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
-    uarte.write(commandString.as_bytes()).await; 
+    uart1.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -258,7 +258,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
-    uarte.write(commandString.as_bytes()).await; 
+    uart1.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -284,7 +284,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
-    uarte.write(commandString.as_bytes()).await; 
+    uart1.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -311,7 +311,7 @@ async fn main(spawner: Spawner) {
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
-    uarte.write(commandString.as_bytes()).await; 
+    uart1.write(commandString.as_bytes()).await; 
     while counter<1 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
