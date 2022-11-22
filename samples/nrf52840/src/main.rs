@@ -206,7 +206,7 @@ async fn main(spawner: Spawner) {
         i = 0;
     }     
 
-    let mut commandString  = "$PQSETCNST*5D\r\n";  //Gets the information of GNSS constellation mask.
+    let mut commandString  = "$PQSETCNST,1F*12\r\n";  //Gets the information of GNSS constellation mask.
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     if((strreadbuf!="\n")&&(i<250))
