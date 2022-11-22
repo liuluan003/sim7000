@@ -177,7 +177,7 @@ async fn main(spawner: Spawner) {
 
 
     defmt::info!("$PQCFGNMEAMSG                                   Sets all the type of output NMEA messages off.");
-    let mut commandString  = "$PQCFGNMEAMSG,0,0,0,0,0,0,0*01\r\n";  //disable the sleeping mode
+    let mut commandString  = "$PQCFGNMEAMSG,1,0,0,0,0,0,0*00\r\n";  //disable the sleeping mode
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     let mut counter = 0;
@@ -337,7 +337,7 @@ async fn main(spawner: Spawner) {
     }
 
 
-
+/* 
 
     defmt::info!("$PQCFGNMEAMSG                                   Sets all the type of output NMEA messages on.");
     let mut commandString  = "$PQCFGNMEAMSG,1,1,1,1,1,1,1*00\r\n";  //disable the sleeping mode
@@ -361,7 +361,7 @@ async fn main(spawner: Spawner) {
         }     
         
     }
-
+*/
 
 
 
