@@ -160,19 +160,17 @@ async fn main(spawner: Spawner) {
 
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); //:&str
-        //defmt::info!("{}",&strreadbuf);
-        //defmt::info!("{}",readmiddlebuf[0]);
+
        
         if((strreadbuf!="\n")&&(i<250))
         {
             readbuf[i]=readmiddlebuf[0];
-            //defmt::info!("{}",readbuf[i]);
             i += 1;
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
             defmt::info!("Read{}",&strreadbuf_line);
-            //defmt::info!("got line");
+    
             i = 0;
         }
  
@@ -213,44 +211,6 @@ async fn main(spawner: Spawner) {
         embassy_nrf::gpio::OutputDrive::Standard,
     );
     
-
-
-    /*  
-    let mut uart_lc79d= BufferedUarte::new(
-        state,
-        &mut self.uarte,
-        &mut self.timer,
-        &mut self.ppi_ch3,
-        &mut self.ppi_ch4,
-        &mut self.irq,
-        &mut self.p1.P0_15,
-        &mut self. p1.P0_14,
-        &mut self.p1.P0_16,
-        &mut self.p1.P1_02,
-        self.config.clone(),
-        &mut self.rx_buffer,
-        &mut self.tx_buffer,
-    );
-*/
-  /*
-    let mut irq_lc79d = interrupt::take!(UARTE1);
-
-    let mut uarte= Uarte::new_with_rtscts(
-
-        p1.UARTE0,
-        p1.TIMER0,
-        p1.PPI_CH0,
-        p1.PPI_CH1,
-        irq_lc79d,
-        p1.P0_20,
-        p1.P0_24,
-        p1.P0_08,
-        p1.P0_11,
-        config,
-    );
-*/
-
-
 
 
 
