@@ -156,7 +156,7 @@ async fn main(spawner: Spawner) {
     let mut i:usize=0;
     let mut readmiddlebuf = [0u8;1];
     let mut readbuf: [u8;250]= [0u8;250];
-    let mut counter = 0;
+    let mut counter:u32 = 0;
     while counter<30 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -189,8 +189,8 @@ async fn main(spawner: Spawner) {
     with_timeout(Duration::from_millis(2000),{
     async {
       
-            loop {
-           // let read= uart1.read(&mut readmiddlebuf[..]);
+        while counter<30 {
+            //let read= uart1.read(&mut readmiddlebuf[..]);
             let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
             let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
             if((strreadbuf!="\n")&&(i<250))
@@ -204,10 +204,11 @@ async fn main(spawner: Spawner) {
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
                 if strreadbuf_line.contains("$PQSETSLEEP") {
-                defmt::info!("got it ");              
-                counter=20; 
+                defmt::info!("get correct response ");              
+                //counter=20; 
                 break;
                 }
+                counter +=1;
             }
            }
         }
@@ -225,7 +226,7 @@ async fn main(spawner: Spawner) {
     with_timeout(Duration::from_millis(2000),{
     async{
       
-            loop {
+        while counter<30  {
             let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
             let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
             if((strreadbuf!="\n")&&(i<250))
@@ -239,11 +240,12 @@ async fn main(spawner: Spawner) {
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
                 if strreadbuf_line.contains("$PQSETGLP") {
-                defmt::info!("got it ");              
-                counter=20; 
+                defmt::info!("get correct response ");              
+                //counter=20; 
                 break;
                 }
             }
+            counter +=1;
            }
         }
     }).await;
@@ -260,7 +262,7 @@ async fn main(spawner: Spawner) {
     with_timeout(Duration::from_millis(2000),{
     async{
   
-        loop {
+        while counter<30  {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
         if((strreadbuf!="\n")&&(i<250))
@@ -274,7 +276,7 @@ async fn main(spawner: Spawner) {
             defmt::info!("Read {}  ",&strreadbuf_line);
             i = 0;
             if strreadbuf_line.contains("$PQCFGNMEAMSGOK") {
-            defmt::info!("got it ");              
+            defmt::info!("get correct response ");              
             counter=20; 
             break;
             }
@@ -292,7 +294,7 @@ async fn main(spawner: Spawner) {
     with_timeout(Duration::from_millis(2000),{
         async{
       
-            loop {
+            while counter<30  {
             let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
             let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
             if((strreadbuf!="\n")&&(i<250))
@@ -306,7 +308,7 @@ async fn main(spawner: Spawner) {
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
                 if strreadbuf_line.contains("$PQCNST") {
-                defmt::info!("got it ");              
+                defmt::info!("get correct response ");              
                 counter=20; 
                 break;
                 }
@@ -325,7 +327,7 @@ async fn main(spawner: Spawner) {
     with_timeout(Duration::from_millis(2000),{
         async{
       
-            loop {
+            while counter<30  {
             let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
             let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
             if((strreadbuf!="\n")&&(i<250))
@@ -339,7 +341,7 @@ async fn main(spawner: Spawner) {
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
                 if strreadbuf_line.contains("$PQSETCNST") {
-                defmt::info!("got it ");              
+                defmt::info!("get correct response ");              
                 counter=20; 
                 break;
                 }
@@ -359,7 +361,7 @@ async fn main(spawner: Spawner) {
     with_timeout(Duration::from_millis(2000),{
         async{
       
-            loop {
+            while counter<30  {
             let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
             let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
             if((strreadbuf!="\n")&&(i<250))
@@ -373,7 +375,7 @@ async fn main(spawner: Spawner) {
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
                 if strreadbuf_line.contains("$PQCFGEAMASK") {
-                defmt::info!("got it ");              
+                defmt::info!("get correct response ");              
                 counter=20; 
                 break;
                 }
@@ -386,7 +388,7 @@ async fn main(spawner: Spawner) {
 
 
 
-    loop {
+    while counter<100 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
         if((strreadbuf!="\n")&&(i<250))
