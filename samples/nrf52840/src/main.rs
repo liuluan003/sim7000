@@ -177,9 +177,10 @@ async fn main(spawner: Spawner) {
         }  
     }
 
-    defmt::info!("$PQCFGNMEAMSG                                   Sets all the type of output NMEA messages off.");
-    let mut commandString  = "$PQCFGNMEAMSG,1,0,0,0,0,0,0*00\r\n";  //  Sets all the type of output NMEA messages off
-
+    //$PQCFGNMEAMSG,1,0,0,0,0,0,0*00 all nmea off 
+    defmt::info!("$PQCFGNMEAMSG,1,1,1,0,0,0,0*00             Sets some  of output NMEA messages off.");
+    let mut commandString  = "$PQCFGNMEAMSG,1,1,1,0,0,0,0*00\r\n";  //  Sets all the type of output NMEA messages off $PQCFGNMEAMSG,1,0,0,0,0,0,0*00   
+    i=0;
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     let mut counter:u8 = 0;
@@ -210,24 +211,21 @@ async fn main(spawner: Spawner) {
        }
     }
 }).await;
-    
- 
 
 
-
-
-    defmt::info!("counter:{}",counter);
-
+    Timer::after(Duration::from_millis(500)).await;
+    defmt::info!("next command");
 
     
+    i=0;
     defmt::info!("$PQSETSLEEP                                   disable the sleeping mode");
-    let mut commandString  = "$PQSETSLEEP,1*11\r\n";  //disable the sleeping mode $PQSETSLEEP,1*11
+    let mut commandString  = "$PQSETSLEEP,0*10\r\n";  //disable the sleeping mode $PQSETSLEEP,1*11
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
     uart1.write(commandString.as_bytes()).await; 
     with_timeout(Duration::from_millis(2000),{
-        async{
+        async {
       
             loop {
             let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
@@ -255,8 +253,8 @@ async fn main(spawner: Spawner) {
 
 
 
-    
-    defmt::info!("$PQSETGLP                                   disable the low power mode");
+    i=0;
+    defmt::info!("$PQSETGLP,0*04                                  disable the low power mode");
     let mut commandString  = "$PQSETGLP,0*04\r\n";  //disable the low power mode to increase the accuracy
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -287,8 +285,9 @@ async fn main(spawner: Spawner) {
            }
         }
     }).await;
-
-    defmt::info!("$PQGETCNST                                   get constellation mask");    
+    
+    i=0;
+    defmt::info!("$PQGETCNST*5D                                  get constellation mask");    
     let mut commandString  = "$PQGETCNST*5D\r\n";  //Gets the information of GNSS constellation mask.
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -310,7 +309,7 @@ async fn main(spawner: Spawner) {
                 let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
-                if strreadbuf_line.contains("$PQGETCNST") {
+                if strreadbuf_line.contains("$PQCNST") {
                 defmt::info!("got it ");              
                 counter=20; 
                 break;
@@ -321,7 +320,7 @@ async fn main(spawner: Spawner) {
     }).await;
 
 
-
+    i=0;
     defmt::info!("$PQSETCNST                                   set constellation mask");    
     let mut commandString  = "$PQSETCNST,1F*12\r\n";  //Sets the information of GNSS constellation mask.
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
@@ -357,7 +356,7 @@ async fn main(spawner: Spawner) {
 
 
 
-
+    i=0;
     defmt::info!("$PQCFGEAMASK                                   Sets estimate accuracy");    
     let mut commandString  = "$PQCFGEAMASK,1,50*67\r\n";  //Sets estimate accuracy
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
