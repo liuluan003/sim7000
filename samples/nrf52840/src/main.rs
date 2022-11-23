@@ -184,7 +184,7 @@ async fn main(spawner: Spawner) {
     }
 
     defmt::info!("$PQCFGNMEAMSG                                   Sets all the type of output NMEA messages off.");
-    let mut commandString  = "$PQCFGNMEAMSG,1,0,0,0,0,0,0*00\r\n";  //disable the sleeping mode
+    let mut commandString  = "$PQCFGNMEAMSG,1,0,0,0,0,0,0*00\r\n";  //  Sets all the type of output NMEA messages off
 
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
@@ -193,11 +193,11 @@ async fn main(spawner: Spawner) {
     //while counter<10{}
 
 
-    async move {
-    with_timeout(Duration::from_millis(1000),{
     
+    with_timeout(Duration::from_millis(2000),{
+    async{
   
-      
+        loop {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
         if((strreadbuf!="\n")&&(i<250))
@@ -209,16 +209,17 @@ async fn main(spawner: Spawner) {
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
             defmt::info!("Read {}  ",&strreadbuf_line);
-            
             i = 0;
             if strreadbuf_line.contains("$PQCFGNMEAMSGOK") {
-                //defmt::info!("got it ");
-                defmt::info!("counter:{}",counter);
-                counter=20;
+            defmt::info!("got it ");              
+            counter=20; 
+            break;
             }
         }
-    }).await;
+       }
     }
+}).await;
+    
  
 
 
@@ -229,7 +230,7 @@ async fn main(spawner: Spawner) {
 
     
     defmt::info!("$PQSETSLEEP                                   disable the sleeping mode");
-    let mut commandString  = "$PQSETSLEEP,0*10\r\n";  //disable the sleeping mode
+    let mut commandString  = "$PQSETSLEEP,1*11\r\n";  //disable the sleeping mode $PQSETSLEEP,1*11
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
@@ -304,7 +305,7 @@ async fn main(spawner: Spawner) {
 
 
     defmt::info!("$PQSETCNST                                   set constellation mask");    
-    let mut commandString  = "$PQSETCNST,1F*12\r\n";  //Gets the information of GNSS constellation mask.
+    let mut commandString  = "$PQSETCNST,1F*12\r\n";  //Sets the information of GNSS constellation mask.
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
