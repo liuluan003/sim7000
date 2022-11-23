@@ -4,9 +4,9 @@
 #![feature(type_name_of_val)]
 #![feature(mem_copy_fn)]
 //use core::time::Duration;
-extern crate tokio;
-use core::time;
-use core::time::Duration;
+//extern crate tokio;
+//use core::time;
+//use core::time::Duration;
 
 
 use core::mem::copy;
@@ -192,8 +192,12 @@ async fn main(spawner: Spawner) {
     uart1.write(commandString.as_bytes()).await; 
     //while counter<10{}
 
-    match tokio::time::timeout(Duration::from_millis(10), work).await {
-        
+  /*
+    async move {
+    with_timeout(Duration::from_millis(1000),{
+    
+  
+      
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
         if((strreadbuf!="\n")&&(i<250))
@@ -212,8 +216,13 @@ async fn main(spawner: Spawner) {
                 defmt::info!("counter:{}",counter);
                 counter=20;
             }
-        }      
+        }
+    }).await;
     }
+    */
+
+
+
 /* */
     defmt::info!("counter:{}",counter);
 
