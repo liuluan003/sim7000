@@ -3,6 +3,12 @@
 #![feature(type_alias_impl_trait)]
 #![feature(type_name_of_val)]
 #![feature(mem_copy_fn)]
+//use core::time::Duration;
+extern crate tokio;
+use core::time;
+use core::time::Duration;
+
+
 use core::mem::copy;
 
 use core::any::type_name_of_val;
@@ -146,11 +152,13 @@ async fn main(spawner: Spawner) {
     lc79_pen.set_high(); 
     defmt::info!("Enable LC79D channel");
 
-    
+    /*
      
+    set_timeout(30, |_res| {
+        defmt::info!("Enable LC79D channel");
+    });
 
-
-
+*/
     let mut i:usize=0;
     let mut readmiddlebuf = [0u8;1];
     let mut readbuf: [u8;250]= [0u8;250];
@@ -180,9 +188,12 @@ async fn main(spawner: Spawner) {
 
     let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
-    let mut counter:u32 = 0;
+    let mut counter:u8 = 0;
     uart1.write(commandString.as_bytes()).await; 
-    while counter<380 {
+    //while counter<10{}
+
+    match tokio::time::timeout(Duration::from_millis(10), work).await {
+        
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
         if((strreadbuf!="\n")&&(i<250))
@@ -193,17 +204,18 @@ async fn main(spawner: Spawner) {
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read{}  counter:{}",&strreadbuf_line,counter);
-            i = 0;
+            defmt::info!("Read {}  ",&strreadbuf_line);
             
+            i = 0;
+            if strreadbuf_line.contains("$PQCFGNMEAMSGOK") {
+                //defmt::info!("got it ");
+                defmt::info!("counter:{}",counter);
+                counter=20;
+            }
         }      
-        counter +=1;
-        
-        //if counter%80==0   {defmt::info!("counter:{}",counter);}
-
     }
-
-
+/* */
+    defmt::info!("counter:{}",counter);
 
 
     
