@@ -152,13 +152,7 @@ async fn main(spawner: Spawner) {
     lc79_pen.set_high(); 
     defmt::info!("Enable LC79D channel");
 
-    /*
-     
-    set_timeout(30, |_res| {
-        defmt::info!("Enable LC79D channel");
-    });
 
-*/
     let mut i:usize=0;
     let mut readmiddlebuf = [0u8;1];
     let mut readbuf: [u8;250]= [0u8;250];
@@ -190,9 +184,6 @@ async fn main(spawner: Spawner) {
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     let mut counter:u8 = 0;
     uart1.write(commandString.as_bytes()).await; 
-    //while counter<10{}
-
-
     
     with_timeout(Duration::from_millis(2000),{
     async{
@@ -224,7 +215,7 @@ async fn main(spawner: Spawner) {
 
 
 
-/* */
+
     defmt::info!("counter:{}",counter);
 
 
@@ -235,23 +226,34 @@ async fn main(spawner: Spawner) {
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
     uart1.write(commandString.as_bytes()).await; 
-    while counter<1 {
-        let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
-        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
-        if((strreadbuf!="\n")&&(i<250))
-        {
-            readbuf[i]=readmiddlebuf[0];
-            i += 1;
-            
+    with_timeout(Duration::from_millis(2000),{
+        async{
+      
+            loop {
+            let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+            let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+            if((strreadbuf!="\n")&&(i<250))
+            {
+                readbuf[i]=readmiddlebuf[0];
+                i += 1;
+                
+            }
+            else{
+                let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+                defmt::info!("Read {}  ",&strreadbuf_line);
+                i = 0;
+                if strreadbuf_line.contains("$PQSETSLEEP") {
+                defmt::info!("got it ");              
+                counter=20; 
+                break;
+                }
+            }
+           }
         }
-        else{
-            let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read {}",&strreadbuf_line);
-            i = 0;
-            counter +=1;
-        }     
+    }).await;
         
-    }
+
+
 
     
     defmt::info!("$PQSETGLP                                   disable the low power mode");
@@ -260,23 +262,31 @@ async fn main(spawner: Spawner) {
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
     uart1.write(commandString.as_bytes()).await; 
-    while counter<1 {
-        let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
-        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
-        if((strreadbuf!="\n")&&(i<250))
-        {
-            readbuf[i]=readmiddlebuf[0];
-            i += 1;
-            
+    with_timeout(Duration::from_millis(2000),{
+        async{
+      
+            loop {
+            let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+            let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+            if((strreadbuf!="\n")&&(i<250))
+            {
+                readbuf[i]=readmiddlebuf[0];
+                i += 1;
+                
+            }
+            else{
+                let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+                defmt::info!("Read {}  ",&strreadbuf_line);
+                i = 0;
+                if strreadbuf_line.contains("$PQSETGLP") {
+                defmt::info!("got it ");              
+                counter=20; 
+                break;
+                }
+            }
+           }
         }
-        else{
-            let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read {}",&strreadbuf_line);
-            i = 0;
-            counter +=1;
-        }     
-        
-    }
+    }).await;
 
     defmt::info!("$PQGETCNST                                   get constellation mask");    
     let mut commandString  = "$PQGETCNST*5D\r\n";  //Gets the information of GNSS constellation mask.
@@ -284,23 +294,31 @@ async fn main(spawner: Spawner) {
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
     uart1.write(commandString.as_bytes()).await; 
-    while counter<1 {
-        let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
-        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
-        if((strreadbuf!="\n")&&(i<250))
-        {
-            readbuf[i]=readmiddlebuf[0];
-            i += 1;
-            
+    with_timeout(Duration::from_millis(2000),{
+        async{
+      
+            loop {
+            let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+            let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+            if((strreadbuf!="\n")&&(i<250))
+            {
+                readbuf[i]=readmiddlebuf[0];
+                i += 1;
+                
+            }
+            else{
+                let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+                defmt::info!("Read {}  ",&strreadbuf_line);
+                i = 0;
+                if strreadbuf_line.contains("$PQGETCNST") {
+                defmt::info!("got it ");              
+                counter=20; 
+                break;
+                }
+            }
+           }
         }
-        else{
-            let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read {}",&strreadbuf_line);
-            i = 0;
-            counter +=1;
-        }     
-        
-    }
+    }).await;
 
 
 
@@ -310,23 +328,32 @@ async fn main(spawner: Spawner) {
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
     uart1.write(commandString.as_bytes()).await; 
-    while counter<1 {
-        let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
-        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
-        if((strreadbuf!="\n")&&(i<250))
-        {
-            readbuf[i]=readmiddlebuf[0];
-            i += 1;
-            
+
+    with_timeout(Duration::from_millis(2000),{
+        async{
+      
+            loop {
+            let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+            let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+            if((strreadbuf!="\n")&&(i<250))
+            {
+                readbuf[i]=readmiddlebuf[0];
+                i += 1;
+                
+            }
+            else{
+                let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+                defmt::info!("Read {}  ",&strreadbuf_line);
+                i = 0;
+                if strreadbuf_line.contains("$PQSETCNST") {
+                defmt::info!("got it ");              
+                counter=20; 
+                break;
+                }
+            }
+           }
         }
-        else{
-            let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read {}",&strreadbuf_line);
-            i = 0;
-            counter +=1;
-        }     
-        
-    }
+    }).await;
 
 
 
@@ -337,24 +364,32 @@ async fn main(spawner: Spawner) {
     let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
     counter=0;
     uart1.write(commandString.as_bytes()).await; 
-    while counter<1 {
-        let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
-        let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
-        if((strreadbuf!="\n")&&(i<250))
-        {
-            readbuf[i]=readmiddlebuf[0];
-            i += 1;
-            
-        }
-        else{
-            let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
-            defmt::info!("Read {}",&strreadbuf_line);
-            i = 0;
-            counter +=1;
-        }     
-        
-    }
 
+    with_timeout(Duration::from_millis(2000),{
+        async{
+      
+            loop {
+            let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
+            let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
+            if((strreadbuf!="\n")&&(i<250))
+            {
+                readbuf[i]=readmiddlebuf[0];
+                i += 1;
+                
+            }
+            else{
+                let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
+                defmt::info!("Read {}  ",&strreadbuf_line);
+                i = 0;
+                if strreadbuf_line.contains("$PQCFGEAMASK") {
+                defmt::info!("got it ");              
+                counter=20; 
+                break;
+                }
+            }
+           }
+        }
+    }).await;
 
 
 
