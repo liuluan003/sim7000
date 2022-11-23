@@ -163,8 +163,7 @@ async fn main(spawner: Spawner) {
         if((strreadbuf!="\n")&&(i<250))
         {
             readbuf[i]=readmiddlebuf[0];
-            i += 1;
-            
+            i += 1;         
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
@@ -204,8 +203,7 @@ async fn main(spawner: Spawner) {
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
                 if strreadbuf_line.contains("$PQSETSLEEP") {
-                defmt::info!("get correct response ");              
-                //counter=20; 
+                defmt::info!("get correct response ");                            
                 break;
                 }
                 counter +=1;
@@ -232,20 +230,18 @@ async fn main(spawner: Spawner) {
             if((strreadbuf!="\n")&&(i<250))
             {
                 readbuf[i]=readmiddlebuf[0];
-                i += 1;
-                
+                i += 1;               
             }
             else{
                 let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
                 if strreadbuf_line.contains("$PQSETGLP") {
-                defmt::info!("get correct response ");              
-                //counter=20; 
+                defmt::info!("get correct response ");                          
                 break;
                 }
-            }
-            counter +=1;
+                counter +=1;
+            }         
            }
         }
     }).await;
@@ -268,8 +264,7 @@ async fn main(spawner: Spawner) {
         if((strreadbuf!="\n")&&(i<250))
         {
             readbuf[i]=readmiddlebuf[0];
-            i += 1;
-            
+            i += 1;        
         }
         else{
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
@@ -277,10 +272,11 @@ async fn main(spawner: Spawner) {
             i = 0;
             if strreadbuf_line.contains("$PQCFGNMEAMSGOK") {
             defmt::info!("get correct response ");              
-            counter=20; 
             break;
             }
+            counter +=1;
         }
+        
        }
     }
     }).await;
@@ -301,18 +297,17 @@ async fn main(spawner: Spawner) {
             {
                 readbuf[i]=readmiddlebuf[0];
                 i += 1;
-                
             }
             else{
                 let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
                 if strreadbuf_line.contains("$PQCNST") {
-                defmt::info!("get correct response ");              
-                counter=20; 
+                defmt::info!("get correct response ");                     
                 break;
                 }
-            }
+                counter +=1;
+            }         
            }
         }
     }).await;
@@ -333,19 +328,18 @@ async fn main(spawner: Spawner) {
             if((strreadbuf!="\n")&&(i<250))
             {
                 readbuf[i]=readmiddlebuf[0];
-                i += 1;
-                
+                i += 1;       
             }
             else{
                 let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
                 defmt::info!("Read {}  ",&strreadbuf_line);
                 i = 0;
                 if strreadbuf_line.contains("$PQSETCNST") {
-                defmt::info!("get correct response ");              
-                counter=20; 
+                defmt::info!("get correct response ");                  
                 break;
                 }
-            }
+                counter +=1;
+            }         
            }
         }
     }).await;
@@ -367,8 +361,7 @@ async fn main(spawner: Spawner) {
             if((strreadbuf!="\n")&&(i<250))
             {
                 readbuf[i]=readmiddlebuf[0];
-                i += 1;
-                
+                i += 1;               
             }
             else{
                 let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
@@ -376,10 +369,10 @@ async fn main(spawner: Spawner) {
                 i = 0;
                 if strreadbuf_line.contains("$PQCFGEAMASK") {
                 defmt::info!("get correct response ");              
-                counter=20; 
                 break;
                 }
-            }
+                counter +=1;
+            }          
            }
         }
     }).await;
@@ -387,8 +380,9 @@ async fn main(spawner: Spawner) {
 
 
 
-
-    while counter<100 {
+    i=0;
+    counter=0;
+    while counter<150 {
         let read= uart1.blocking_read(&mut readmiddlebuf[..]).unwrap();
         let strreadbuf = core::str::from_utf8(&readmiddlebuf).unwrap(); 
         if((strreadbuf!="\n")&&(i<250))
@@ -400,7 +394,9 @@ async fn main(spawner: Spawner) {
             let strreadbuf_line:&str = core::str::from_utf8(&readbuf[0..i]).unwrap();
             defmt::info!("Read {}",&strreadbuf_line);
             i = 0;
-        }     
+            counter +=1;  
+        }
+           
     }
 
 
