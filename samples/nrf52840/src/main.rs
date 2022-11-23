@@ -192,7 +192,7 @@ async fn main(spawner: Spawner) {
     uart1.write(commandString.as_bytes()).await; 
     //while counter<10{}
 
-  /*
+
     async move {
     with_timeout(Duration::from_millis(1000),{
     
@@ -219,7 +219,7 @@ async fn main(spawner: Spawner) {
         }
     }).await;
     }
-    */
+ 
 
 
 
